@@ -29,16 +29,19 @@ const CONFIG = {
   email: "joeljurgensen@gmail.com",
   telefon: "+45 51 21 56 41",
   by: "Holstebro",
-  foto: "Materiale/foto.jpg",       // vises automatisk, når filen findes. Ellers en cirkel med "JJ"
-  skaermKNtool: "Materiale/kntool.png",   // vises automatisk ved demoen, når filen findes
-  skaermRFAtool: "Materiale/rfatool.png", // vises automatisk ved demoen, når filen findes
+  // Billeder: læg filen i mappen "Materiale", og skriv stien her. Tom = vises ikke.
+  foto: "",                   // fx "Materiale/foto.jpg". Tom = en cirkel med "JJ"
+  skaermKNtool: "",           // fx "Materiale/kntool.png". Vises ved siden af KNtool-demoen
+  skaermRFAtool: "",          // fx "Materiale/rfatool.png". Vises ved siden af RFAtool-demoen
   github: ""                  // adressen til GitHub-repoet. Linket vises først, når den er udfyldt
 };
 
-/* Skjuler indhold til animationerne, kun når de faktisk kan køre */
-if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  document.documentElement.classList.add("anim");
-}
+/* Respekterer "reducér bevægelse" i styresystemet.
+   Til test kan animationerne tvinges til med ?motion=1 i linket. */
+const REDUCED_MOTION = matchMedia("(prefers-reduced-motion: reduce)").matches
+  && !/[?&]motion=1(&|$)/.test(location.search);
+if (!REDUCED_MOTION) document.documentElement.classList.add("anim");
+else document.documentElement.classList.add("reduced");
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
