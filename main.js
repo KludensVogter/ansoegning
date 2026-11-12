@@ -56,12 +56,11 @@
     $('#mail-btn').href = 'mailto:' + CONFIG.email;
     $('#tel-btn').href = 'tel:' + CONFIG.telefon.replace(/[^\d+]/g, '');
 
-    const tail = ', fordi jeg vil arbejde med det, jeg interesserer mig for: de digitale processer bag projekteringen.';
     let lead = 'Jeg søger en stilling inden for IKT og BIM-koordinering';
     if (stilling && virksomhed) lead = 'Jeg søger stillingen som ' + stilling + ' hos ' + virksomhed;
     else if (stilling) lead = 'Jeg søger stillingen som ' + stilling;
     else if (virksomhed) lead = 'Jeg søger en stilling inden for IKT og BIM-koordinering hos ' + virksomhed;
-    $('#motivation').textContent = lead + tail;
+    $('#motivation').textContent = lead + '.';
 
     $('#hero-label').textContent = stilling ? 'Ansøgning · ' + stilling : 'Ansøgning';
     if (virksomhed) document.title = CONFIG.navn + ' · Ansøgning til ' + virksomhed;
@@ -121,7 +120,7 @@
      --------------------------------------------------------------- */
   const scenes = $$('[data-scene]').map((el) => ({
     el, inner: $('.scene-inner', el), steps: Number(el.dataset.steps) || 1,
-    start: 0, seen: false, op: -1, sc: -1, near: null
+    start: 0, seen: false, op: -1, sc: -1, near: null, fit: 1
   }));
   let totalStops = 0;
   scenes.forEach((s) => { s.start = totalStops; totalStops += s.steps; });
@@ -193,7 +192,8 @@
     counter.firstElementChild.textContent = String(idx + 1).padStart(2, '0');
     counter.children[1].textContent = '/ ' + String(scenes.length).padStart(2, '0');
     counter.lastElementChild.textContent = scene.el.dataset.title || '';
-    $$('.tool.is-demo-open').forEach((t) => { if (!scene.el.contains(t)) t.classList.remove('is-demo-open'); });
+    $$('.sheet-host.is-sheet-open').forEach((t) => { if (!scene.el.contains(t)) t.classList.remove('is-sheet-open'); });
+    document.dispatchEvent(new CustomEvent('scenechange'));
   };
   const markSeen = (s) => {
     if (s.seen) return;
@@ -228,7 +228,7 @@
       if (near && (Math.abs(op - s.op) > 0.001 || Math.abs(sc - s.sc) > 0.0005)) {
         s.op = op; s.sc = sc;
         s.inner.style.opacity = op.toFixed(3);
-        s.inner.style.transform = 'scale(' + sc.toFixed(4) + ')';
+        s.inner.style.transform = 'scale(' + (sc * s.fit).toFixed(4) + ')';
       }
       if (op > 0.45) markSeen(s);
 
@@ -258,6 +258,18 @@
     else scene.el.scrollIntoView({ behavior: 'auto', block: 'start' });
   };
 
+  /* Et fokuspunkt skal kunne være på skærmen i sin helhed. Er indholdet for højt
+     til vinduet, skaleres hele fokuspunktet en anelse ned. */
+  const measureFit = () => {
+    scenes.forEach((s) => {
+      const cs = getComputedStyle(s.el);
+      const avail = s.el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      const h = s.inner.offsetHeight;
+      s.fit = h > avail + 1 ? Math.max(0.78, avail / h) : 1;
+      s.op = -1; s.sc = -1;
+    });
+  };
+
   /* Scenetilstand kræver animationer og et vindue, der er højt nok til indholdet */
   const wantScenes = () => animate && window.innerHeight >= 560 && (window.innerWidth < 960 || window.innerHeight >= 620);
   const setMode = () => {
@@ -282,6 +294,7 @@
       stopH = Math.round(window.innerHeight * 0.9);
       spacer.style.height = ((totalStops - 1) * stopH + window.innerHeight) + 'px';
       measureTimeline();
+      measureFit();
       current = null;
       render();
     }
@@ -337,13 +350,13 @@
         else window.scrollTo(0, keep * stopH);
       }
     });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (sceneMode) { measureTimeline(); render(); } });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (sceneMode) { measureTimeline(); measureFit(); render(); } });
 
     let navTarget = null;
     let navTime = 0;
     /* Tastatur: pil ned/op, PageDown/PageUp, mellemrum, Home og End */
     document.addEventListener('keydown', (e) => {
-      if (!sceneMode || menuOpen || e.altKey || e.ctrlKey || e.metaKey) return;
+      if (!sceneMode || menuOpen || e.altKey || e.ctrlKey || e.metaKey || !$('#lightbox').hidden) return;
       const t = e.target;
       const typing = t instanceof HTMLElement && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName));
       const onControl = t instanceof HTMLElement && /^(BUTTON|A)$/.test(t.tagName);
@@ -476,34 +489,34 @@
   });
 
   /* ---------------------------------------------------------------
-     8. Værktøjsdemoer: starter, når de kommer i fokus eller åbnes
+     8. Demoer og git-historik: starter, når de kommer i fokus.
+        På mobil ligger de bag en knap og glider op over fokuspunktet.
      --------------------------------------------------------------- */
-  safe('demoer', () => {
+  safe('ark', () => {
     const wide = matchMedia('(min-width: 900px)');
-    $$('.tool').forEach((tool) => {
-      const demo = $('.demo', tool);
-      const scene = tool.closest('[data-scene]');
+    $$('.sheet-host').forEach((host) => {
+      const sheet = $('.sheet', host);
+      const scene = host.closest('[data-scene]');
+      const openBtn = $('.sheet-open', host);
+      const closeBtn = $('.sheet-close', host);
       let started = false;
       const start = (delay) => {
         if (started) return;
         started = true;
-        setTimeout(() => demo.dispatchEvent(new CustomEvent('demostart')), delay);
+        setTimeout(() => sheet.dispatchEvent(new CustomEvent('demostart')), delay);
       };
-      $('.demo-open', tool).addEventListener('click', () => { tool.classList.add('is-demo-open'); start(500); });
-      $('.demo-close', tool).addEventListener('click', () => { tool.classList.remove('is-demo-open'); $('.demo-open', tool).focus(); });
+      openBtn.addEventListener('click', () => { host.classList.add('is-sheet-open'); start(500); });
+      closeBtn.addEventListener('click', () => { host.classList.remove('is-sheet-open'); openBtn.focus(); });
 
       if (!animate) return;
-      scene.addEventListener('sceneenter', () => {
-        if (!sceneMode) return;
-        if (wide.matches) start(700);
-      });
-      /* Uden fokuspunkter (lavt vindue): start, når demoen er rullet ind i billedet */
+      scene.addEventListener('sceneenter', () => { if (sceneMode && wide.matches) start(700); });
+      /* Uden fokuspunkter (lavt vindue): start, når indholdet er rullet ind i billedet */
       const io = new IntersectionObserver(([e]) => {
         if (!e.isIntersecting || sceneMode) return;
         io.disconnect();
         start(400);
       }, { threshold: 0.5 });
-      io.observe(demo);
+      io.observe(sheet);
     });
   });
 
@@ -529,8 +542,79 @@
     window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(reserve, 150); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(reserve);
 
+    /* Infovindue: tagget vokser og bliver til et vindue med mere tekst */
+    const pop = $('#tag-pop');
+    const popTitle = $('b', pop);
+    const popText = $('p', pop);
+    let openTag = null;
+    let openedAt = 0;
+    let closedClip = 'inset(0px)';
+    let titleFrom = { x: 0, y: 0 };
+    const closePop = (now) => {
+      if (!openTag) return;
+      openTag.classList.remove('is-open');
+      openTag = null;
+      if (!animate) { pop.classList.remove('is-open'); return; }
+      gsap.killTweensOf([pop, popTitle, popText]);
+      if (now) { pop.classList.remove('is-open'); return; }
+      gsap.to(popText, { opacity: 0, duration: 0.2, ease: 'power3.out' });
+      gsap.to(popTitle, { x: titleFrom.x, y: titleFrom.y, duration: 0.2, ease: 'power3.out' });
+      gsap.to(pop, { clipPath: closedClip, duration: 0.2, ease: 'power3.out', onComplete: () => pop.classList.remove('is-open') });
+    };
+    const openPop = (tag) => {
+      if (openTag === tag) return;
+      if (openTag) openTag.classList.remove('is-open');
+      openTag = tag;
+      openedAt = Date.now();
+      tag.classList.add('is-open');
+      const name = $('b', tag);
+      popTitle.textContent = name.textContent;
+      popText.textContent = $('.visually-hidden', tag).textContent;
+      if (animate) { gsap.killTweensOf([pop, popTitle, popText]); gsap.set([pop, popTitle, popText], { clearProps: 'all' }); }
+      pop.classList.add('is-open');
+
+      /* placér vinduet oven på tagget (k udligner, hvis fokuspunktet er skaleret) */
+      const box = list.getBoundingClientRect();
+      const k = (box.width / list.offsetWidth) || 1;
+      const r = tag.getBoundingClientRect();
+      const t = { l: (r.left - box.left) / k, t: (r.top - box.top) / k, w: r.width / k, h: r.height / k };
+      const pw = pop.offsetWidth;
+      const ph = pop.offsetHeight;
+      const left = clamp(t.l, 0, Math.max(0, list.offsetWidth - pw));
+      const up = r.top + ph * k > window.innerHeight - 56;      /* vokser opad, hvis der ikke er plads nedad */
+      const top = up ? t.t + t.h - ph : t.t;
+      pop.style.left = left + 'px';
+      pop.style.top = top + 'px';
+      if (!animate) return;
+
+      const l = t.l - left;
+      const tt = t.t - top;
+      closedClip = 'inset(' + tt.toFixed(1) + 'px ' + Math.max(0, pw - l - t.w).toFixed(1) + 'px ' +
+        Math.max(0, ph - tt - t.h).toFixed(1) + 'px ' + l.toFixed(1) + 'px round 12px)';
+      const nr = name.getBoundingClientRect();
+      const tr = popTitle.getBoundingClientRect();
+      titleFrom = { x: (nr.left - tr.left) / k, y: (nr.top - tr.top) / k };
+      gsap.fromTo(pop, { clipPath: closedClip }, { clipPath: 'inset(0px 0px 0px 0px round 16px)', duration: 0.6, ease: 'power3.out' });
+      gsap.fromTo(popTitle, { x: titleFrom.x, y: titleFrom.y }, { x: 0, y: 0, duration: 0.6, ease: 'power3.out' });
+      gsap.fromTo(popText, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', delay: 0.1 });
+    };
+    tags.forEach((tag) => {
+      tag.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') openPop(tag); });
+      tag.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse' && openTag === tag) closePop(); });
+      tag.addEventListener('focus', () => openPop(tag));
+      tag.addEventListener('blur', () => { if (openTag === tag) closePop(); });
+      tag.addEventListener('click', () => {
+        if (openTag === tag && Date.now() - openedAt > 350) closePop();
+        else openPop(tag);
+      });
+    });
+    document.addEventListener('pointerdown', (e) => { if (openTag && !e.target.closest('.tag')) closePop(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePop(); });
+    document.addEventListener('scenechange', () => closePop(true));
+
     const apply = (cat) => {
       current2 = cat;
+      closePop(true);
       buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.filter === cat)));
       if (!animate) { tags.forEach((t) => { t.hidden = !matches(t, cat); }); return; }
 
@@ -560,7 +644,7 @@
     buttons.forEach((b) => b.addEventListener('click', () => { if (b.dataset.filter !== current2) apply(b.dataset.filter); }));
 
     const hint = $('.tags-hint');
-    if (hint && !finePointer) hint.textContent = 'Tryk på et værktøj med en prik for at se mere.';
+    if (hint && !finePointer) hint.textContent = 'Tryk på et værktøj for at se, hvordan jeg bruger det.';
   });
 
   /* ---------------------------------------------------------------
@@ -571,7 +655,7 @@
     const cmdText = 'git log --oneline --reverse';
     const line = (cls) => { const d = document.createElement('div'); d.className = 'term-line ' + cls; return d; };
     const span = (cls, text) => { const s = document.createElement('span'); s.className = cls; s.textContent = text; return s; };
-    const play = animate && sceneMode;
+    const play = animate;
 
     const cmd = line('term-cmd');
     const cmdMsg = span('msg', play ? '' : cmdText);
@@ -591,14 +675,14 @@
     $('#term').setAttribute('aria-label', 'Terminalvindue med sidens git-historik: ' + COMMITS.map((c) => c[1]).join('. '));
 
     if (!play) return;
-    $('#saadan').addEventListener('sceneenter', () => {
+    $('#term-wrap').addEventListener('demostart', () => {
       let i = 0;
       const type = () => {
         cmdMsg.textContent = cmdText.slice(0, ++i);
         if (i < cmdText.length) setTimeout(type, 38);
         else gsap.to([...rows, end], { opacity: 1, duration: 0.2, ease: 'power3.out', stagger: 0.16, delay: 0.3 });
       };
-      setTimeout(type, 700);
+      setTimeout(type, 100);
     }, { once: true });
   });
 

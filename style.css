@@ -231,7 +231,7 @@ p + p { margin-top: 16px; }
   background: none; overflow: hidden; visibility: hidden;
 }
 .scenes .scene.is-near { visibility: visible; }
-.scenes .scene-inner { max-height: 100%; will-change: transform, opacity; }
+.scenes .scene-inner { will-change: transform, opacity; }
 
 /* Indholdet i et fokuspunkt toner ind, første gang det kommer i fokus */
 .scenes [data-in] {
@@ -484,16 +484,27 @@ p + p { margin-top: 16px; }
 .tool { display: grid; gap: 32px; align-items: center; }
 .tool-intro { margin-top: 20px; max-width: 30em; color: var(--muted); }
 .tool .tabs { margin-top: 24px; }
-.demo-open, .demo-close { display: none; }
+.sheet-open, .sheet-close { display: none; }
+.tool-actions { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
 @media (min-width: 900px) {
   .tool { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); gap: 72px; }
   .tool-flip { grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr); }
   .tool-flip .tool-text { order: 2; }
 }
 
-.shot { margin-top: 24px; display: grid; gap: 8px; text-align: left; font-size: 0.8125rem; color: var(--muted); }
-.shot img { width: 200px; border-radius: 10px; box-shadow: 0 0 0 1px var(--line); transition: scale var(--t-reveal) var(--ease); }
-.shot:hover img { scale: 1.03; }
+.shot { display: grid; gap: 10px; text-align: left; }
+.shot img {
+  width: 260px; aspect-ratio: 1259 / 808; object-fit: cover; object-position: left top; border-radius: 10px;
+  box-shadow: 0 0 0 1px rgba(30, 36, 28, 0.12), 0 18px 32px -20px rgba(30, 36, 28, 0.45);
+  transition: scale var(--t-reveal) var(--ease);
+}
+.shot:hover img { scale: 1.04; }
+.shot-cap { position: relative; justify-self: start; font: 600 0.875rem/1.2 var(--body); color: var(--green-ink); }
+.shot-cap::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 1.5px; background: currentColor;
+  transform: scaleX(0); transform-origin: left; transition: transform var(--t-hover) var(--ease);
+}
+.shot:hover .shot-cap::after, .shot:focus-visible .shot-cap::after { transform: scaleX(1); }
 
 .demo {
   display: flex; flex-direction: column;
@@ -552,59 +563,83 @@ p + p { margin-top: 16px; }
 .kn-item.is-new::after { animation: flash 1.2s var(--ease) both; }
 @keyframes flash { 0% { opacity: 0.28; } 100% { opacity: 0; } }
 
-/* Mobil: demoen ligger bag knappen "Prøv demoen" og glider op over fokuspunktet */
+/* Mobil: demo og historik ligger bag en knap og glider op over fokuspunktet */
 @media (max-width: 899.98px) {
-  .scenes .scene-inner.tool { position: relative; height: 100%; align-content: center; }
-  .scenes .demo-open { display: inline-flex; margin-top: 28px; }
-  .scenes .demo-close {
-    display: grid; place-items: center; width: 36px; height: 36px; margin-right: -8px; border-radius: 50%;
-  }
-  .scenes .tool .demo {
+  .scenes .sheet-host { position: relative; height: 100%; align-content: center; }
+  .scenes .sheet-open { display: inline-flex; }
+  .scenes .sheet-close { display: grid; place-items: center; width: 36px; height: 36px; margin-right: -8px; border-radius: 50%; flex: none; }
+  .scenes .sheet-host .sheet {
     position: absolute; inset: 0 var(--pad); z-index: 5;
     opacity: 1; transform: translateY(calc(100% + 60px)); visibility: hidden;
     transition: transform var(--t-big) var(--ease-expo), visibility 0s linear var(--t-big);
   }
-  .scenes .tool.is-demo-open .demo { transform: none; visibility: inherit; transition-delay: 0s; }
-  .scenes .tool .tool-text { transition: opacity var(--t-reveal) var(--ease); }
-  .scenes .tool.is-demo-open .tool-text { opacity: 0; pointer-events: none; }
+  .scenes .sheet-host.is-sheet-open .sheet { transform: none; visibility: inherit; transition-delay: 0s; }
+  .scenes .sheet-main { transition: opacity var(--t-reveal) var(--ease); }
+  .scenes .is-sheet-open .sheet-main { opacity: 0; pointer-events: none; }
   .scenes .tool .vlist { flex: 1 1 0; height: auto; min-height: 0; }
+  .scenes .made-side { display: flex; flex-direction: column; justify-content: center; }
+  /* skærmbilledet åbnes fra en knap i stedet for et miniaturebillede */
+  .scenes .shot img { display: none; }
+  .scenes .shot-cap {
+    display: inline-flex; align-items: center; min-height: 52px; padding: 0 24px; border-radius: 999px;
+    box-shadow: inset 0 0 0 1.5px var(--ink); color: var(--ink); font-size: 1rem;
+  }
+  .scenes .shot-cap::after { display: none; }
 }
 
 /* ---------- 7 · Kompetencer ---------- */
 .filters { margin-top: clamp(20px, 4vh, 40px); display: flex; flex-wrap: wrap; gap: 8px; }
 .tags { position: relative; margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; }
 .tag {
-  position: relative; display: inline-flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 12px;
-  background: var(--panel); max-width: 100%; will-change: transform;
+  position: relative; display: inline-flex; align-items: center; padding: 9px 14px; border-radius: 12px;
+  background: var(--panel); max-width: 100%; will-change: transform; cursor: default;
   transition: background-color var(--t-hover) var(--ease), color var(--t-hover) var(--ease);
 }
 .tag[hidden] { display: none; }
-.tag b { font: 700 clamp(1rem, 1.6vw, 1.375rem)/1.2 var(--display); letter-spacing: -0.01em; }
-.tag.has-tip { cursor: help; }
-.tag.has-tip::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green); transition: background-color var(--t-hover) var(--ease); }
-.tag.has-tip:hover, .tag.has-tip:focus { background: var(--ink); color: var(--bg); outline: none; }
-.tag.has-tip:hover::after, .tag.has-tip:focus::after { background: var(--green-soft); }
-.tag.has-tip:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
-.tip {
-  position: absolute; left: 0; bottom: calc(100% + 8px); z-index: 5; pointer-events: none;
-  padding: 8px 12px; border-radius: 10px; background: var(--green); color: #fff;
-  font: 500 0.8125rem/1.2 var(--body); white-space: nowrap;
-  opacity: 0; transform: translateY(6px);
-  transition: opacity var(--t-hover) var(--ease), transform var(--t-hover) var(--ease);
+.tag b, .tag-pop b { font: 700 clamp(1rem, 1.6vw, 1.375rem)/1.2 var(--display); letter-spacing: -0.01em; }
+.tag:hover, .tag:focus, .tag.is-open { background: var(--ink); color: var(--bg); outline: none; }
+.tag:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
+/* Infovinduet: tagget vokser og bliver til et vindue med mere tekst */
+.tag-pop {
+  position: absolute; left: 0; top: 0; z-index: 6; width: 340px; max-width: 100%;
+  padding: 9px 14px 16px; border-radius: 16px; background: var(--ink); color: var(--bg);
+  pointer-events: none; visibility: hidden; will-change: clip-path;
 }
-.tag:hover .tip, .tag:focus .tip { opacity: 1; transform: none; }
+.tag-pop.is-open { visibility: inherit; }
+.tag-pop b { display: block; width: max-content; max-width: 100%; }
+.tag-pop p { margin-top: 10px; font-size: 0.9375rem; line-height: 1.5; color: #DDE3D8; }
 .tags-hint { margin-top: 12px; font-size: 0.8125rem; color: var(--muted); }
 #kompetencer .tabs { margin-top: clamp(20px, 4vh, 40px); }
 @media (min-width: 900px) {
   .tag { padding: 14px 20px; border-radius: 14px; }
   .tags { gap: 10px; margin-top: 24px; }
+  .tag-pop { width: 380px; padding: 14px 20px 20px; }
+  .tag-pop p { font-size: 1rem; }
 }
 
-/* ---------- 8 · Sådan er siden lavet ---------- */
+/* ---------- 8 · Sådan arbejder jeg med AI ---------- */
 .made { display: grid; gap: clamp(20px, 4vh, 48px); align-items: center; }
 .made-text .lede { margin-top: 20px; max-width: 30em; }
-.made-note { color: var(--muted); max-width: 30em; }
-@media (min-width: 900px) { .made { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); gap: 72px; } }
+.made-note { margin-top: 20px; color: var(--muted); max-width: 30em; }
+@media (min-width: 900px) { .made { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: 72px; } }
+/* Arbejdsgangen, der gentages: ét trin lyser op ad gangen */
+.loop { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 0; }
+.loop li {
+  display: inline-flex; align-items: center; font: 600 0.8125rem/1 var(--body); letter-spacing: 0.02em;
+  opacity: 0.5; animation: loop-on 5.6s var(--ease) infinite;
+}
+.loop li:nth-child(2) { animation-delay: 1.4s; }
+.loop li:nth-child(3) { animation-delay: 2.8s; }
+.loop li:nth-child(4) { animation-delay: 4.2s; }
+.loop li::before { content: ""; width: 7px; height: 7px; margin-right: 7px; border-radius: 50%; background: var(--green); }
+.loop li:not(:last-child)::after { content: ""; width: 18px; height: 1.5px; margin: 0 10px; background: var(--edge-line); }
+@keyframes loop-on {
+  0%, 30%, 100% { opacity: 0.5; }
+  5%, 24% { opacity: 1; }
+}
+.reduced .loop li { opacity: 1; }
+.term-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.term-cap { font-size: 0.875rem; color: var(--muted); }
 .term {
   border-radius: 16px; overflow: hidden; background: var(--ink); color: #DDE3D8;
   box-shadow: 0 24px 48px -24px rgba(30, 36, 28, 0.45);
@@ -663,6 +698,11 @@ p + p { margin-top: 16px; }
   .scenes .statement { font-size: 1.375rem; }
   .scenes .lede, .scenes .tabs-wide .tab-panel { font-size: 0.9375rem; line-height: 1.45; }
   .scenes .tabs-hint { display: none; }
+  .scenes .tag-pop p { font-size: 0.875rem; line-height: 1.45; margin-top: 8px; }
+  .scenes .made-note, .scenes .loop { margin-top: 12px; }
+  .scenes .made-note { font-size: 0.9375rem; }
+  .scenes .tool-actions { margin-top: 16px; }
+  .scenes .tab-panel { font-size: 0.9375rem; line-height: 1.45; }
   .scenes #derfor .tabs, .scenes #kompetencer .tabs { margin-top: 14px; }
   .scenes .tab, .scenes .filter { height: 34px; padding: 0 12px; font-size: 0.8125rem; }
   .scenes .filters { margin-top: 12px; gap: 6px; }

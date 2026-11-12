@@ -31,15 +31,15 @@ const CONFIG = {
   by: "Holstebro",
   // Billeder: læg filen i mappen "Materiale", og skriv stien her. Tom = vises ikke.
   foto: "",                   // fx "Materiale/foto.jpg". Tom = en cirkel med "JJ"
-  skaermKNtool: "",           // fx "Materiale/kntool.png". Vises ved siden af KNtool-demoen
-  skaermRFAtool: "",          // fx "Materiale/rfatool.png". Vises ved siden af RFAtool-demoen
+  skaermKNtool: "Materiale/kntool.png",   // skærmbillede af den rigtige app. Tom = vises ikke
+  skaermRFAtool: "Materiale/rfatool.png", // skærmbillede af den rigtige app. Tom = vises ikke
   github: ""                  // adressen til GitHub-repoet. Linket vises først, når den er udfyldt
 };
 
 /* Respekterer "reducér bevægelse" i styresystemet.
-   Til test kan animationerne tvinges til med ?motion=1 i linket. */
-const REDUCED_MOTION = matchMedia("(prefers-reduced-motion: reduce)").matches
-  && !/[?&]motion=1(&|$)/.test(location.search);
+   Til test kan animationerne tvinges til med ?motion=1 og fra med ?motion=0 i linket. */
+const REDUCED_MOTION = /[?&]motion=0(&|$)/.test(location.search)
+  || (matchMedia("(prefers-reduced-motion: reduce)").matches && !/[?&]motion=1(&|$)/.test(location.search));
 if (!REDUCED_MOTION) document.documentElement.classList.add("anim");
 else document.documentElement.classList.add("reduced");
 </script>
@@ -77,7 +77,7 @@ else document.documentElement.classList.add("reduced");
       <a href="#bidrag">Bidrag</a>
       <a href="#vaerktoejer">Værktøjer</a>
       <a href="#kompetencer">Kompetencer</a>
-      <a href="#saadan">Om siden</a>
+      <a href="#saadan">Metode</a>
       <a href="#kontakt">Kontakt</a>
     </nav>
     <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Åbn menu">
@@ -94,7 +94,7 @@ else document.documentElement.classList.add("reduced");
     <a href="#bidrag" style="--i:2">Bidrag</a>
     <a href="#vaerktoejer" style="--i:3">Værktøjer</a>
     <a href="#kompetencer" style="--i:4">Kompetencer</a>
-    <a href="#saadan" style="--i:5">Om siden</a>
+    <a href="#saadan" style="--i:5">Metode</a>
     <a href="#kontakt" style="--i:6">Kontakt</a>
   </nav>
   <p class="menu-foot" style="--i:7"><span data-cfg="by">Holstebro</span> · Lavet med AI</p>
@@ -169,8 +169,8 @@ else document.documentElement.classList.add("reduced");
 <section class="scene" id="derfor" data-scene data-title="Derfor">
   <div class="scene-inner container">
     <p class="label" data-in style="--i:0">Derfor søger jeg</p>
-    <h2 class="statement" id="statement">For mig er det lige så tilfredsstillende at løse et teknisk problem som at lave selve modellen.</h2>
-    <p class="lede measure" id="motivation" data-in style="--i:2">Jeg søger en stilling inden for IKT og BIM-koordinering, fordi jeg vil arbejde med det, jeg interesserer mig for: de digitale processer bag projekteringen.</p>
+    <h2 class="statement" id="statement">Jeg vil arbejde med det, jeg interesserer mig for: de digitale processer bag projekteringen.</h2>
+    <p class="lede measure" data-in style="--i:2"><span id="motivation">Jeg søger en stilling inden for IKT og BIM-koordinering.</span> For mig er det lige så tilfredsstillende at løse et teknisk problem som at lave selve modellen.</p>
 
     <div class="tabs tabs-wide" data-tabs data-in style="--i:3">
       <p class="tabs-hint">Det tager jeg med</p>
@@ -181,10 +181,10 @@ else document.documentElement.classList.add("reduced");
         <button class="tab" type="button" role="tab" aria-selected="false">Digitale arbejdsgange</button>
       </div>
       <div class="tab-panels">
-        <p class="tab-panel is-active" role="tabpanel">Jeg håndterer fagmodeller i det daglige, fx når spærleverandørens model skal passe med arkitektmodellen.</p>
-        <p class="tab-panel" role="tabpanel">Jeg bruger BIM-modellen til at identificere bygningsdele og kontrollere projektet.</p>
-        <p class="tab-panel" role="tabpanel">Jeg trækker mængder ud af modellen og er ansvarlig for LCA-beregningerne.</p>
-        <p class="tab-panel" role="tabpanel">En bedre arbejdsgang sparer tid og sikrer sammenhæng i projektet. Det motiverer mig.</p>
+        <p class="tab-panel is-active" role="tabpanel">Jeg håndterer fagmodeller i det daglige, fx når spærleverandørens model skal passe med arkitektmodellen. Jeg tegner også selv MEP- og ING-modeller op ud fra skitser. Jo tidligere modellerne passer sammen, jo færre overraskelser er der på byggepladsen.</p>
+        <p class="tab-panel" role="tabpanel">Jeg bruger BIM-modellen aktivt til at identificere bygningsdele og kontrollere projektet. Som tømrer har jeg selv bygget efter andres tegninger. Derfor går jeg op i, at projektet hænger sammen, før det når byggepladsen.</p>
+        <p class="tab-panel" role="tabpanel">Jeg trækker mængder direkte ud af modellen og er ansvarlig for LCA-beregningerne, fra projektering til færdigmelding. Jeg udvikler også parametriske Revit-families med indbyrdes afhængigheder.</p>
+        <p class="tab-panel" role="tabpanel">Jeg motiveres af at forbedre digitale arbejdsgange, både for at spare tid og for at sikre sammenhæng i projektet. Når en arbejdsgang er tung, udvikler jeg gerne et værktøj til den. Jeg lærer ofte nye Revit-funktioner tidligt.</p>
       </div>
     </div>
   </div>
@@ -331,11 +331,11 @@ else document.documentElement.classList.add("reduced");
 
 <!-- ============ 5 · RFATOOL ============ -->
 <section class="scene" id="vaerktoejer" data-scene data-tone="panel" data-title="RFAtool">
-  <div class="scene-inner container tool">
-    <div class="tool-text">
+  <div class="scene-inner container tool sheet-host">
+    <div class="tool-text sheet-main">
       <p class="label" data-in style="--i:0">Værktøjer, jeg har bygget · 1 af 2</p>
       <h2 class="h2 tool-name" data-mask><span>RFAtool</span></h2>
-      <p class="tool-intro" data-in style="--i:2">Når en arbejdsgang er tung, udvikler jeg et værktøj til den. Jeg kan ikke selv kode, så jeg bygger dem i fritiden sammen med Claude Code.</p>
+      <p class="tool-intro" data-in style="--i:2">Når en arbejdsgang er tung, udvikler jeg et værktøj til den. Jeg bygger dem i fritiden med Claude Code.</p>
       <div class="tabs" data-tabs data-in style="--i:3">
         <div class="tab-list" role="tablist" aria-label="RFAtool">
           <button class="tab" type="button" role="tab" aria-selected="true">Problemet</button>
@@ -343,14 +343,16 @@ else document.documentElement.classList.add("reduced");
         </div>
         <div class="tab-panels">
           <p class="tab-panel is-active" role="tabpanel">Revit-families ligger i mapper, og man skal vide, hvor man skal lede.</p>
-          <p class="tab-panel" role="tabpanel">RFAtool indekserer families i den eksisterende mappestruktur og gør dem søgbare.</p>
+          <p class="tab-panel" role="tabpanel">RFAtool indekserer families i den eksisterende mappestruktur og gør dem søgbare. Man kan filtrere på kategori og producent og se en forhåndsvisning af hver family.</p>
         </div>
       </div>
-      <button class="btn btn-primary demo-open" type="button" data-in style="--i:4"><span>Prøv demoen</span></button>
-      <button class="shot" type="button" id="shot-rfatool" hidden aria-label="Forstør skærmbillede af RFAtool"><img alt="Skærmbillede af RFAtool" loading="lazy"><span>Rigtigt skærmbillede</span></button>
+      <div class="tool-actions" data-in style="--i:4">
+        <button class="btn btn-primary sheet-open" type="button"><span>Prøv demoen</span></button>
+        <button class="shot" type="button" id="shot-rfatool" hidden aria-label="Forstør skærmbillede af den rigtige RFAtool"><img alt="Skærmbillede af RFAtool" loading="lazy"><span class="shot-cap">Se den rigtige app</span></button>
+      </div>
     </div>
-    <div class="demo" id="demo-rfa" data-in style="--i:2">
-      <div class="demo-bar"><span class="demo-title">RFAtool</span><span class="badge badge-quiet">Illustration</span><button class="demo-close" type="button" aria-label="Luk demoen"><span class="plus is-x"></span></button></div>
+    <div class="demo sheet" id="demo-rfa" data-in style="--i:2">
+      <div class="demo-bar"><span class="demo-title">RFAtool</span><span class="badge badge-quiet">Illustration</span><button class="sheet-close" type="button" aria-label="Luk demoen"><span class="plus is-x"></span></button></div>
       <div class="demo-body">
         <label class="search">
           <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="M13.5 13.5 17 17"/></svg>
@@ -366,8 +368,8 @@ else document.documentElement.classList.add("reduced");
 
 <!-- ============ 6 · KNTOOL ============ -->
 <section class="scene" id="kntool" data-scene data-tone="panel" data-title="KNtool">
-  <div class="scene-inner container tool tool-flip">
-    <div class="tool-text">
+  <div class="scene-inner container tool tool-flip sheet-host">
+    <div class="tool-text sheet-main">
       <p class="label" data-in style="--i:0">Værktøjer, jeg har bygget · 2 af 2</p>
       <h2 class="h2 tool-name" data-mask><span>KNtool</span></h2>
       <div class="tabs" data-tabs data-in style="--i:2">
@@ -377,14 +379,16 @@ else document.documentElement.classList.add("reduced");
         </div>
         <div class="tab-panels">
           <p class="tab-panel is-active" role="tabpanel">Det er tungt at oprette og vedligeholde keynotes i Revit.</p>
-          <p class="tab-panel" role="tabpanel">KNtool er en brugerflade, der gør begge dele lettere.</p>
+          <p class="tab-panel" role="tabpanel">KNtool er en brugerflade, der gør begge dele lettere. Keynotes samles pr. projekt, kan søges frem og eksporteres til Revits keynote-fil. Der hører også et bibliotek med.</p>
         </div>
       </div>
-      <button class="btn btn-primary demo-open" type="button" data-in style="--i:3"><span>Prøv demoen</span></button>
-      <button class="shot" type="button" id="shot-kntool" hidden aria-label="Forstør skærmbillede af KNtool"><img alt="Skærmbillede af KNtool" loading="lazy"><span>Rigtigt skærmbillede</span></button>
+      <div class="tool-actions" data-in style="--i:3">
+        <button class="btn btn-primary sheet-open" type="button"><span>Prøv demoen</span></button>
+        <button class="shot" type="button" id="shot-kntool" hidden aria-label="Forstør skærmbillede af den rigtige KNtool"><img alt="Skærmbillede af KNtool" loading="lazy"><span class="shot-cap">Se den rigtige app</span></button>
+      </div>
     </div>
-    <div class="demo" id="demo-kn" data-in style="--i:2">
-      <div class="demo-bar"><span class="demo-title">KNtool</span><span class="badge badge-quiet">Illustration</span><button class="demo-close" type="button" aria-label="Luk demoen"><span class="plus is-x"></span></button></div>
+    <div class="demo sheet" id="demo-kn" data-in style="--i:2">
+      <div class="demo-bar"><span class="demo-title">KNtool</span><span class="badge badge-quiet">Illustration</span><button class="sheet-close" type="button" aria-label="Luk demoen"><span class="plus is-x"></span></button></div>
       <div class="demo-body">
         <div class="kn-actions">
           <p class="demo-meta" id="kn-count" aria-live="polite">10 keynotes</p>
@@ -411,18 +415,19 @@ else document.documentElement.classList.add("reduced");
     </div>
 
     <ul class="tags" id="tags" data-in style="--i:3">
-      <li class="tag has-tip" data-cat="projektering" tabindex="0"><b>Revit</b><span class="tip">Avanceret niveau, dagligt</span></li>
-      <li class="tag has-tip" data-cat="projektering" tabindex="0"><b>Dynamo</b><span class="tip">Grundlæggende, fra valgfag</span></li>
-      <li class="tag has-tip" data-cat="projektering 3d" tabindex="0"><b>Autodesk Forma/ACC</b><span class="tip">Terræn og projektplatform</span></li>
-      <li class="tag" data-cat="lca"><b>RealtimeLCA</b></li>
-      <li class="tag" data-cat="lca"><b>LCAbyg</b></li>
-      <li class="tag" data-cat="lca"><b>LCCbyg</b></li>
-      <li class="tag has-tip" data-cat="3d" tabindex="0"><b>Matterport</b><span class="tip">3D-scanning af bygninger</span></li>
-      <li class="tag has-tip" data-cat="3d" tabindex="0"><b>Blender</b><span class="tip">Regnsimulering af tagrender</span></li>
-      <li class="tag" data-cat="3d"><b>Fusion 360</b></li>
-      <li class="tag has-tip" data-cat="ai" tabindex="0"><b>Claude Code</b><span class="tip">Egne værktøjer til Revit</span></li>
+      <li class="tag" data-cat="projektering" tabindex="0"><b>Revit</b><span class="visually-hidden">Avanceret niveau. Jeg projekterer i Revit hver dag, udvikler parametriske families og bruger modellen til modelhåndtering og dataudtræk.</span></li>
+      <li class="tag" data-cat="projektering" tabindex="0"><b>Dynamo</b><span class="visually-hidden">Grundlæggende niveau fra et valgfag på VIA. Der brugte jeg Dynamo til automatisk at oprette og navngive sheets og sætte views op.</span></li>
+      <li class="tag" data-cat="projektering 3d" tabindex="0"><b>Autodesk Forma/ACC</b><span class="visually-hidden">Forma bruger jeg til terræn og omkringliggende bygninger i Revit-modellen. ACC har jeg brugt som projektplatform på ét projekt.</span></li>
+      <li class="tag" data-cat="lca" tabindex="0"><b>RealtimeLCA</b><span class="visually-hidden">Et af de programmer, jeg bruger til LCA-beregninger. Jeg er ansvarlig for beregningerne i mit nuværende job.</span></li>
+      <li class="tag" data-cat="lca" tabindex="0"><b>LCAbyg</b><span class="visually-hidden">Fulde LCA-beregninger, fra projektering til færdigmelding.</span></li>
+      <li class="tag" data-cat="lca" tabindex="0"><b>LCCbyg</b><span class="visually-hidden">Hører til de beregninger, jeg er ansvarlig for. Jeg har også taget kurset LCA og bæredygtighed hos Grønne kompetencer.</span></li>
+      <li class="tag" data-cat="3d" tabindex="0"><b>Matterport</b><span class="visually-hidden">3D-scanning af bygninger hos 3P Technology, bl.a. en komplet scanning af Holbæk Sportsby.</span></li>
+      <li class="tag" data-cat="3d" tabindex="0"><b>Blender</b><span class="visually-hidden">Under uddannelsen lavede jeg en regnsimulering i Blender for at analysere tagrender med stort fald.</span></li>
+      <li class="tag" data-cat="3d" tabindex="0"><b>Fusion 360</b><span class="visually-hidden">Her tegner jeg funktionelle 3D-print i fritiden.</span></li>
+      <li class="tag" data-cat="ai" tabindex="0"><b>Claude Code</b><span class="visually-hidden">Med Claude Code udvikler jeg mine egne værktøjer, fx KNtool og RFAtool. Det foregår i mange runder med test og nye instrukser.</span></li>
+      <li class="tag-pop" id="tag-pop" aria-hidden="true"><b></b><p></p></li>
     </ul>
-    <p class="tags-hint" data-in style="--i:4">Peg på et værktøj med en prik for at se mere.</p>
+    <p class="tags-hint" data-in style="--i:4">Peg på et værktøj for at se, hvordan jeg bruger det.</p>
 
     <div class="tabs tabs-wide" data-tabs data-in style="--i:5">
       <div class="tab-list" role="tablist" aria-label="Mere om mig">
@@ -439,19 +444,31 @@ else document.documentElement.classList.add("reduced");
   </div>
 </section>
 
-<!-- ============ 8 · SÅDAN ER SIDEN LAVET ============ -->
-<section class="scene" id="saadan" data-scene data-tone="panel" data-title="Om siden">
-  <div class="scene-inner container made">
-    <div class="made-text">
-      <p class="label" data-in style="--i:0">Sådan er siden lavet</p>
-      <h2 class="h2" data-mask><span>Bygget ud fra en brief</span></h2>
-      <p class="lede" data-in style="--i:2">Jeg skrev en brief med fakta, krav og en tjekliste. Claude Code byggede, testede og udgav siden.</p>
-      <p class="made-note" data-in style="--i:3">Samme arbejdsmetode bruger jeg, når jeg udvikler mine Revit-værktøjer.</p>
-      <p data-in style="--i:4" id="github-wrap" hidden><a class="link" id="github-link" href="#" rel="noopener">Se koden på GitHub</a></p>
+<!-- ============ 8 · SÅDAN ARBEJDER JEG MED AI ============ -->
+<section class="scene" id="saadan" data-scene data-tone="panel" data-title="Metode">
+  <div class="scene-inner container made sheet-host">
+    <div class="made-text sheet-main">
+      <p class="label" data-in style="--i:0">Sådan arbejder jeg med AI</p>
+      <h2 class="h2" data-mask><span>Ikke én prompt. Mange runder.</span></h2>
+      <p class="lede" data-in style="--i:2">At lave en app med Claude Code er for mig en iterativ proces. Jeg beskriver, hvad jeg vil have, tester resultatet og giver nye instrukser. Så tester jeg igen.</p>
+      <ol class="loop" data-in style="--i:3" aria-label="Arbejdsgangen, der gentages">
+        <li>Beskriv</li><li>Test</li><li>Kommentér</li><li>Test igen</li>
+      </ol>
+      <p class="made-note" data-in style="--i:4">Det er udvikling over mange timer, hvor appen bliver bedre for hver runde. Sådan er KNtool og RFAtool blevet til, og i dag bruger både jeg og mine kolleger dem.</p>
+      <div class="tool-actions" data-in style="--i:5">
+        <button class="btn btn-primary sheet-open" type="button"><span>Se sidens egne runder</span></button>
+      </div>
+      <p data-in style="--i:5" id="github-wrap" hidden><a class="link" id="github-link" href="#" rel="noopener">Se koden på GitHub</a></p>
     </div>
-    <div class="term" id="term" data-in style="--i:2" role="img" aria-label="Terminalvindue, der viser sidens git-historik">
-      <div class="term-bar"><i></i><i></i><i></i><span>ansoegning · git</span></div>
-      <div class="term-body" id="term-body" aria-hidden="true"></div>
+    <div class="made-side sheet" id="term-wrap" data-in style="--i:2">
+      <div class="term-head">
+        <p class="term-cap">Denne side er lavet på samme måde. Her er dens egne runder.</p>
+        <button class="sheet-close" type="button" aria-label="Luk historikken"><span class="plus is-x"></span></button>
+      </div>
+      <div class="term" id="term" role="img" aria-label="Terminalvindue, der viser sidens git-historik">
+        <div class="term-bar"><i></i><i></i><i></i><span>ansoegning · git</span></div>
+        <div class="term-body" id="term-body" aria-hidden="true"></div>
+      </div>
     </div>
   </div>
 </section>
