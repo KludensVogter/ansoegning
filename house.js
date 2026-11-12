@@ -304,10 +304,11 @@ export function init(stage, opts = {}) {
 
   /* ---------- Render-løkke: pauser, når hero er ude af syne ---------- */
   let inView = true;
+  let active = true;
   let raf = 0;
   const frame = () => {
     raf = 0;
-    if (!inView || document.hidden) return;
+    if (!inView || !active || document.hidden) return;
     update();
     controls.update();
     renderer.render(scene, camera);
@@ -321,6 +322,7 @@ export function init(stage, opts = {}) {
   return {
     setLayer(name, on) { if (layerState[name]) tween(layerState[name], { v: on ? 1 : 0 }, reduced ? 0 : 0.6, 'power3.out'); },
     setManual(on) { tween(state, { manual: on ? 1 : 0 }, reduced ? 0 : 1.0, 'expo.out'); },
-    setScroll(p) { state.scroll = p; }
+    setScroll(p) { state.scroll = p; },
+    setActive(on) { active = !!on; if (active) start(); }
   };
 }

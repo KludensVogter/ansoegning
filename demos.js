@@ -11,7 +11,7 @@
   const reduced = REDUCED_MOTION;
   const $ = (s, r = document) => r.querySelector(s);
   const ROW = 36;            /* skal svare til --row-h i style.css */
-  const MAX_ROWS = 9;
+  const capacity = (list) => Math.max(3, Math.floor(list.clientHeight / ROW) || 8);
 
   const el = (tag, cls, text) => {
     const n = document.createElement(tag);
@@ -30,15 +30,6 @@
     return s;
   };
   const place = (node, index) => { node.style.transform = 'translateY(' + index * ROW + 'px)'; };
-  const whenVisible = (node, fn) => {
-    const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      io.disconnect();
-      fn();
-    }, { threshold: 0.5 });
-    io.observe(node);
-  };
-
   /* ---------------------------------------------------------------
      RFAtool: søgning i families
      --------------------------------------------------------------- */
@@ -74,11 +65,12 @@
 
     const filter = (q) => {
       const tokens = q.toLowerCase().trim().split(/\s+/).filter(Boolean);
+      const max = capacity(list);
       let hits = 0;
       let shown = 0;
       rows.forEach((r) => {
         const hit = tokens.every((t) => r.hay.includes(t));
-        const show = hit && shown < MAX_ROWS;
+        const show = hit && shown < max;
         if (hit) hits++;
         if (show) { place(r.node, shown); shown++; }
         r.node.classList.toggle('is-hidden', !show);
@@ -91,13 +83,15 @@
     };
     filter('');
     input.addEventListener('input', () => filter(input.value));
+    window.addEventListener('resize', () => filter(input.value));
 
     /* Skriver selv "dør 9", første gang demoen kommer frem */
     if (reduced) return;
     let cancelled = false;
     const cancel = () => { cancelled = true; };
     ['focus', 'pointerdown', 'keydown'].forEach((ev) => input.addEventListener(ev, cancel, { once: true }));
-    whenVisible(list, () => {
+    list.closest('.demo').addEventListener('demostart', () => {
+      filter(input.value);
       const text = 'dør 9';
       let i = 0;
       const type = () => {
@@ -116,13 +110,11 @@
   const GROUPS = [
     { key: '21', name: 'Ydervægge', items: [['21.1', 'Bagmur'], ['21.2', 'Isolering'], ['21.3', 'Formur']] },
     { key: '22', name: 'Indervægge', items: [['22.1', 'Gipsvæg'], ['22.2', 'Muret væg']] },
-    { key: '23', name: 'Dæk', items: [['23.1', 'Terrændæk'], ['23.2', 'Etageadskillelse']] },
     { key: '27', name: 'Tage', items: [['27.1', 'Tagbelægning'], ['27.2', 'Undertag'], ['27.3', 'Spær']] },
     { key: '31', name: 'Vinduer og døre', items: [['31.1', 'Vinduer'], ['31.2', 'Yderdøre']] }
   ];
   const NEW_KEYNOTES = [
-    ['21', '21.4', 'Murbindere'], ['27', '27.4', 'Tagrende'], ['22', '22.3', 'Glasvæg'],
-    ['23', '23.3', 'Tagdæk'], ['31', '31.3', 'Indvendige døre']
+    ['21', '21.4', 'Murbindere'], ['27', '27.4', 'Tagrende'], ['22', '22.3', 'Glasvæg'], ['31', '31.3', 'Indvendige døre']
   ];
 
   const initKn = () => {
@@ -200,7 +192,7 @@
     let touched = false;
     list.addEventListener('pointerdown', () => { touched = true; }, { once: true });
     addBtn.addEventListener('pointerdown', () => { touched = true; }, { once: true });
-    whenVisible(list, () => setTimeout(() => { if (!touched) add(); }, 900));
+    list.closest('.demo').addEventListener('demostart', () => setTimeout(() => { if (!touched) add(); }, 600));
   };
 
   initRfa();
