@@ -15,7 +15,10 @@
     ['293eaa0', 'Opsætning: brief, sidestruktur, indhold og designsystem'],
     ['1d96ff0', 'Interaktioner: menu, tidslinje, kort, filter, terminal og kontakt'],
     ['cf01cad', 'Værktøjsdemoer og 3D-hus: fagmodeller, lagknapper og adskilt visning'],
-    ['589f2a7', 'Finpudsning: to runder designgennemgang, delingsbillede og beslutningslog']
+    ['589f2a7', 'Finpudsning: to runder designgennemgang, delingsbillede og beslutningslog'],
+    ['f29806b', 'Terminal: den rigtige git-historik indsat'],
+    ['fdd7c42', 'Fokuspunkter: hvert afsnit fylder én skærm, zoomer i fokus ved scroll, detaljer bag knapper og hover'],
+    ['d67b60f', 'Skærmbilleder af de rigtige apps, nye tekster, infovinduer og fokuspunkt om arbejdsmetoden']
   ];
 
   const $ = (s, r = document) => r.querySelector(s);
