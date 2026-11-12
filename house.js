@@ -36,7 +36,7 @@ export function init(stage, opts = {}) {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 200);
   const TARGET = new THREE.Vector3(0, 2.7, 0);
-  const DIST = 26;
+  const DIST = 29;
   camera.position.setFromSphericalCoords(DIST, THREE.MathUtils.degToRad(66), THREE.MathUtils.degToRad(38)).add(TARGET);
 
   scene.add(new THREE.HemisphereLight(0xffffff, 0xd9dfd2, 1.15));
@@ -198,7 +198,7 @@ export function init(stage, opts = {}) {
 
   /* ---------- Tilstand ---------- */
   const state = { manual: reduced ? 1 : 0, scroll: 0 };
-  const CENTER_CLOSED = 2.7, CENTER_OPEN = 5.9, SCALE_OPEN = 0.56;
+  const CENTER_CLOSED = 2.7, CENTER_OPEN = 5.9, SCALE_OPEN = 0.68;
 
   /* Intro: huset bygger sig selv op nedefra, lag for lag */
   if (!reduced) parts.forEach((p) => tween(p, { b: 1 }, 0.6, 'power3.out', 0.1 + p.order * 0.13));
