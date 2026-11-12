@@ -8,7 +8,10 @@
   /* De rigtige commit-beskeder fra repoets git-historik (ældste først).
      Opdateres med:  git log --reverse --format="%h|%s"                  */
   const COMMITS = [
-    ['293eaa0', 'Opsætning: brief, sidestruktur, indhold og designsystem']
+    ['293eaa0', 'Opsætning: brief, sidestruktur, indhold og designsystem'],
+    ['1d96ff0', 'Interaktioner: menu, tidslinje, kort, filter, terminal og kontakt'],
+    ['cf01cad', 'Værktøjsdemoer og 3D-hus: fagmodeller, lagknapper og adskilt visning'],
+    ['589f2a7', 'Finpudsning: to runder designgennemgang, delingsbillede og beslutningslog']
   ];
 
   const $ = (s, r = document) => r.querySelector(s);
