@@ -1,0 +1,6 @@
+# Den samlede PDF indeholder gadeadresse og må ikke udgives
+Materiale/*.pdf
+.~lock.*
+.claude/
+node_modules/
+test-results/

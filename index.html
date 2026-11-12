@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Joel Jürgensen · Ansøgning</title>
+<meta name="description" content="Bygningskonstruktør med håndværksmæssig erfaring og blik for digitalt byggeri. En ansøgning bygget som webside med AI.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Joel Jürgensen · Problemløser med blik for digitalt byggeri">
+<meta property="og:description" content="Bygningskonstruktør med håndværksmæssig erfaring. En ansøgning bygget som webside med AI.">
+<meta property="og:image" content="og.png">
+<meta name="theme-color" content="#FAFAF7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%234E7D3A'/%3E%3Cpath d='M8 17 16 9l8 8v7H8z' fill='none' stroke='%23FAFAF7' stroke-width='2.4' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+<script>
+/* ------------------------------------------------------------------
+   INDSTILLINGER – det eneste, der skal rettes senere.
+
+   Virksomhed og stilling kan også sættes direkte i linket, så samme
+   side kan sendes til flere:
+     …/ansoegning/?v=AFRY&s=IKT-projektkoordinator
+   Uden parametre (og med "XXX" herunder) står teksten neutralt.
+   ------------------------------------------------------------------ */
+const CONFIG = {
+  virksomhed: "XXX",          // fx "AFRY"  (eller ?v=AFRY i linket)
+  stilling: "XXX",            // fx "IKT-projektkoordinator"  (eller ?s=… i linket)
+  navn: "Joel Jürgensen",
+  email: "joeljurgensen@gmail.com",
+  telefon: "+45 51 21 56 41",
+  by: "Holstebro",
+  foto: "Materiale/foto.jpg",       // vises automatisk, når filen findes. Ellers en cirkel med "JJ"
+  skaermKNtool: "Materiale/kntool.png",   // vises automatisk ved demoen, når filen findes
+  skaermRFAtool: "Materiale/rfatool.png", // vises automatisk ved demoen, når filen findes
+  github: ""                  // adressen til GitHub-repoet. Linket vises først, når den er udfyldt
+};
+
+/* Skjuler indhold til animationerne, kun når de faktisk kan køre */
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.documentElement.classList.add("anim");
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script defer src="demos.js"></script>
+<script defer src="main.js"></script>
+</head>
+
+<body>
+<a class="skip" href="#indhold">Spring til indhold</a>
+
+<!-- ============ TOPBJÆLKE ============ -->
+<header class="topbar" id="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#top">
+      <span class="brand-name" data-cfg="navn">Joel Jürgensen</span>
+      <span class="badge">Lavet med AI</span>
+    </a>
+    <nav class="nav" aria-label="Sektioner">
+      <a href="#derfor">Derfor</a>
+      <a href="#erfaring">Erfaring</a>
+      <a href="#bidrag">Bidrag</a>
+      <a href="#vaerktoejer">Værktøjer</a>
+      <a href="#kompetencer">Kompetencer</a>
+      <a href="#saadan">Om siden</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+    <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Åbn menu">
+      <span></span><span></span>
+    </button>
+  </div>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress"></div></div>
+</header>
+
+<div class="menu" id="menu" aria-hidden="true">
+  <nav class="menu-nav" aria-label="Menu">
+    <a href="#derfor" style="--i:0">Derfor</a>
+    <a href="#erfaring" style="--i:1">Erfaring</a>
+    <a href="#bidrag" style="--i:2">Bidrag</a>
+    <a href="#vaerktoejer" style="--i:3">Værktøjer</a>
+    <a href="#kompetencer" style="--i:4">Kompetencer</a>
+    <a href="#saadan" style="--i:5">Om siden</a>
+    <a href="#kontakt" style="--i:6">Kontakt</a>
+  </nav>
+  <p class="menu-foot" style="--i:7"><span data-cfg="by">Holstebro</span> · Lavet med AI</p>
+</div>
+
+<main id="indhold">
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div class="container hero-grid">
+    <div class="hero-text">
+      <div class="hero-id" data-intro>
+        <div class="avatar" id="avatar"><span aria-hidden="true">JJ</span></div>
+        <p class="label" id="hero-label">Ansøgning</p>
+      </div>
+      <h1 class="hero-title">
+        <span class="line"><span>Problemløser med blik</span></span>
+        <span class="line"><span>for digitalt byggeri</span></span>
+      </h1>
+      <p class="hero-sub" data-intro>Bygningskonstruktør med håndværksmæssig erfaring</p>
+      <p class="lede" data-intro>Jeg er en computernørd med byggefaglig viden. Som tømrer og bygningskonstruktør kender jeg byggeriet både fra byggepladsen og fra projekteringen.</p>
+      <div class="btn-row" data-intro>
+        <a class="btn btn-primary" href="#kontakt"><span>Kontakt mig</span></a>
+        <a class="btn btn-ghost" href="#vaerktoejer"><span>Se mine værktøjer</span></a>
+      </div>
+    </div>
+
+    <div class="hero-model" data-intro>
+      <div class="stage" id="stage">
+        <!-- Vises kun, hvis WebGL ikke virker -->
+        <svg class="house-svg" id="house-svg" viewBox="0 0 400 360" role="img" aria-label="Tegning af et hus opdelt i fagmodeller">
+          <g class="svg-grid" stroke="#D5DBCF" stroke-width="1">
+            <path d="M20 322H380M40 334H360M60 346H340"/>
+          </g>
+          <g data-layer="konstruktion" class="svg-part p-fund"><rect x="58" y="298" width="284" height="22" fill="#9AA19A"/></g>
+          <g data-layer="arkitekt" class="svg-part p-wall">
+            <rect x="70" y="184" width="260" height="114" fill="#F0EBE1" stroke="#C9C2B2" stroke-width="2"/>
+            <rect x="104" y="218" width="34" height="80" fill="#D8D0BF"/>
+            <rect x="176" y="218" width="96" height="46" fill="#C7D8DA"/>
+          </g>
+          <g data-layer="mep" class="svg-part p-mep" fill="none" stroke="#E08A2E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M96 196H292V86"/>
+          </g>
+          <g data-layer="konstruktion" class="svg-part p-deck"><rect x="70" y="172" width="260" height="12" fill="#9AA19A"/></g>
+          <g data-layer="arkitekt" class="svg-part p-gable">
+            <path d="M70 172V148L200 62 330 148V172Z" fill="#F0EBE1" stroke="#C9C2B2" stroke-width="2"/>
+            <rect x="178" y="108" width="44" height="38" fill="#C7D8DA"/>
+          </g>
+          <g data-layer="tag" class="svg-part p-roof">
+            <path d="M48 160 200 58 352 160" fill="none" stroke="#4E7D3A" stroke-width="14" stroke-linejoin="miter"/>
+          </g>
+        </svg>
+        <div class="house-label" id="house-label" aria-hidden="true"></div>
+      </div>
+      <div class="layers" role="group" aria-label="Lag i modellen">
+        <button class="layer" type="button" data-layer="konstruktion" aria-pressed="true"><i style="--c:#9AA19A"></i>Konstruktion</button>
+        <button class="layer" type="button" data-layer="arkitekt" aria-pressed="true"><i style="--c:#E4DCCB"></i>Arkitekt</button>
+        <button class="layer" type="button" data-layer="mep" aria-pressed="true"><i style="--c:#E08A2E"></i>MEP</button>
+        <button class="layer" type="button" data-layer="tag" aria-pressed="true"><i style="--c:#4E7D3A"></i>Tag</button>
+        <button class="layer layer-explode" type="button" id="explode" aria-pressed="false">Adskil</button>
+      </div>
+      <p class="stage-hint">Træk for at dreje. Slå fagmodellerne til og fra.</p>
+    </div>
+  </div>
+  <div class="scroll-cue" aria-hidden="true" data-intro><span>Scroll</span><i></i></div>
+</section>
+
+<!-- ============ DERFOR ============ -->
+<section class="section" id="derfor" data-section>
+  <div class="container">
+    <p class="label" data-reveal>Derfor søger jeg</p>
+    <h2 class="h2" data-mask><span>Jeg vil derhen, hvor modellerne mødes</span></h2>
+    <p class="lede measure" id="motivation" data-reveal>Jeg søger en stilling inden for IKT og BIM-koordinering, fordi jeg vil arbejde med det, jeg interesserer mig for: de digitale processer bag projekteringen.</p>
+
+    <p class="statement" id="statement">For mig er det lige så tilfredsstillende at løse et teknisk problem som at lave selve modellen.</p>
+
+    <ul class="points">
+      <li data-reveal>
+        <h3 class="h4">Modelkoordinering</h3>
+        <p>Jeg håndterer fagmodeller i det daglige, fx når spærleverandørens model skal passe med arkitektmodellen.</p>
+      </li>
+      <li data-reveal>
+        <h3 class="h4">Kvalitetssikring</h3>
+        <p>Jeg bruger BIM-modellen til at identificere bygningsdele og kontrollere projektet.</p>
+      </li>
+      <li data-reveal>
+        <h3 class="h4">Data fra modellen</h3>
+        <p>Jeg trækker mængder ud af modellen og er ansvarlig for LCA-beregningerne.</p>
+      </li>
+      <li data-reveal>
+        <h3 class="h4">Digitale arbejdsgange</h3>
+        <p>En bedre arbejdsgang sparer tid og sikrer sammenhæng i projektet. Det motiverer mig.</p>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ ERFARING / TIDSLINJE ============ -->
+<section class="timeline" id="erfaring" data-section>
+  <div class="tl-pin">
+    <div class="container tl-head">
+      <p class="label" data-reveal>Erfaring</p>
+      <h2 class="h2" data-mask><span>Fra byggeplads til BIM-model</span></h2>
+    </div>
+    <div class="tl-viewport">
+      <div class="tl-track" id="tl-track">
+        <div class="tl-rail" aria-hidden="true"><div class="tl-line" id="tl-line"></div></div>
+        <ol class="tl-list">
+          <li class="tl-station">
+            <svg class="tl-icon" viewBox="0 0 48 48" aria-hidden="true">
+              <path pathLength="1" d="M9 39 27 21"/>
+              <path pathLength="1" d="M22 14 30 6 42 18 34 26Z"/>
+            </svg>
+            <p class="tl-years">2016 – 2019</p>
+            <h3 class="tl-role">Tømrerlærling</h3>
+            <p class="tl-place">Byggefirmaet Halkjær og Nr. Felding Tømrer og Snedker</p>
+            <p class="tl-text">Arkitekttegnede huse fra start til slut. Nybyggeri og renovering. Svendebrev i 2019.</p>
+          </li>
+          <li class="tl-station">
+            <svg class="tl-icon" viewBox="0 0 48 48" aria-hidden="true">
+              <path pathLength="1" d="M6 41H42"/>
+              <path pathLength="1" d="M11 41V11H27V41"/>
+              <path pathLength="1" d="M27 21H37V41"/>
+              <path pathLength="1" d="M16 18H22M16 25H22M16 32H22"/>
+            </svg>
+            <p class="tl-years">2019 – 2020</p>
+            <h3 class="tl-role">Tømrersvend</h3>
+            <p class="tl-place">Lund og Refsgaard</p>
+            <p class="tl-text">Større byggerier som uddannelsesinstitutioner og hoteller.</p>
+          </li>
+          <li class="tl-station">
+            <svg class="tl-icon" viewBox="0 0 48 48" aria-hidden="true">
+              <path pathLength="1" d="M9 7H39V41H9Z"/>
+              <path pathLength="1" d="M15 14H33V27H15Z"/>
+              <path pathLength="1" d="M24 14V27M15 34H27"/>
+            </svg>
+            <p class="tl-years">2020 – 2024</p>
+            <h3 class="tl-role">Bygningskonstruktør&shy;uddannelsen</h3>
+            <p class="tl-place">VIA University College</p>
+            <p class="tl-text">Valgfag inden for BIM og digitalisering, bl.a. Dynamo til automatisk oprettelse af sheets og views. Mentor for medstuderende.</p>
+          </li>
+          <li class="tl-station">
+            <svg class="tl-icon" viewBox="0 0 48 48" aria-hidden="true">
+              <path pathLength="1" d="M16 8H30V21H16Z"/>
+              <path pathLength="1" d="M23 21V29M23 29 13 42M23 29 33 42M23 29V42"/>
+              <path pathLength="1" d="M34 10 41 7M34 14.5H42M34 19 41 22"/>
+            </svg>
+            <p class="tl-years">2022 – 2024</p>
+            <h3 class="tl-role">Studiejob, deltid</h3>
+            <p class="tl-place">3P Technology</p>
+            <p class="tl-text">Flowdiagrammer til programmører, der udviklede software til de danske brandregler. 3D-scanning med Matterport, bl.a. hele Holbæk Sportsby.</p>
+          </li>
+          <li class="tl-station">
+            <svg class="tl-icon" viewBox="0 0 48 48" aria-hidden="true">
+              <path pathLength="1" d="M24 5 40 14V33L24 43 8 33V14Z"/>
+              <path pathLength="1" d="M8 14 24 24 40 14"/>
+              <path pathLength="1" d="M24 24V43"/>
+            </svg>
+            <p class="tl-years">2024 – nu</p>
+            <h3 class="tl-role">Bygningskonstruktør</h3>
+            <p class="tl-place">Arkitec as · praktik samme sted i 2023</p>
+            <p class="tl-text">Projektering og projektledelse af byggesager, fra byggeansøgning og udbud til færdigmelding. Dagligt i Revit.</p>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ BIDRAG ============ -->
+<section class="section" id="bidrag" data-section>
+  <div class="container">
+    <p class="label" data-reveal>Bidrag</p>
+    <h2 class="h2" data-mask><span>Det kan jeg bidrage med</span></h2>
+    <ul class="cards">
+      <li data-reveal>
+        <article class="card">
+          <div class="card-glow" aria-hidden="true"></div>
+          <div class="card-face">
+            <p class="card-num">01</p>
+            <h3 class="h3"><button class="card-toggle" type="button" aria-expanded="false" aria-controls="card-1">Modelkoordinering og kvalitetssikring</button></h3>
+            <p class="card-teaser">Fagmodeller, der skal passe sammen, før de mødes på byggepladsen.</p>
+            <p class="card-more" aria-hidden="true"><span class="plus"></span>Se eksempler</p>
+          </div>
+          <div class="card-back" id="card-1">
+            <p class="card-back-title">Modelkoordinering og kvalitetssikring</p>
+            <ul>
+              <li>Koordinerer fagmodeller, fx spærleverandørens model med arkitektmodellen.</li>
+              <li>Tegner MEP- og ING-modeller op ud fra skitser.</li>
+              <li>Bruger BIM-modellen til kvalitetssikring og identifikation af bygningsdele.</li>
+            </ul>
+            <p class="card-more" aria-hidden="true"><span class="plus is-x"></span>Luk</p>
+          </div>
+        </article>
+      </li>
+      <li data-reveal>
+        <article class="card">
+          <div class="card-glow" aria-hidden="true"></div>
+          <div class="card-face">
+            <p class="card-num">02</p>
+            <h3 class="h3"><button class="card-toggle" type="button" aria-expanded="false" aria-controls="card-2">Data fra BIM-modellen</button></h3>
+            <p class="card-teaser">Modellen er mere end en tegning. Den er også et sted at hente tal.</p>
+            <p class="card-more" aria-hidden="true"><span class="plus"></span>Se eksempler</p>
+          </div>
+          <div class="card-back" id="card-2">
+            <p class="card-back-title">Data fra BIM-modellen</p>
+            <ul>
+              <li>Mængdeudtræk direkte fra modellen.</li>
+              <li>Ansvarlig for LCA-beregninger i RealtimeLCA, LCAbyg og LCCbyg.</li>
+              <li>Parametriske Revit-families med indbyrdes afhængigheder.</li>
+            </ul>
+            <p class="card-more" aria-hidden="true"><span class="plus is-x"></span>Luk</p>
+          </div>
+        </article>
+      </li>
+      <li data-reveal>
+        <article class="card">
+          <div class="card-glow" aria-hidden="true"></div>
+          <div class="card-face">
+            <p class="card-num">03</p>
+            <h3 class="h3"><button class="card-toggle" type="button" aria-expanded="false" aria-controls="card-3">Punktskyer og 3D-scanning</button></h3>
+            <p class="card-teaser">Eksisterende bygninger, registreret digitalt og tegnet op.</p>
+            <p class="card-more" aria-hidden="true"><span class="plus"></span>Se eksempler</p>
+          </div>
+          <div class="card-back" id="card-3">
+            <p class="card-back-title">Punktskyer og 3D-scanning</p>
+            <ul>
+              <li>Punktskyer til registrering og optegning af eksisterende bygninger.</li>
+              <li>3D-scanning af bygninger med Matterport.</li>
+              <li>Komplet scanning af Holbæk Sportsby.</li>
+            </ul>
+            <p class="card-more" aria-hidden="true"><span class="plus is-x"></span>Luk</p>
+          </div>
+        </article>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ VÆRKTØJER ============ -->
+<section class="section section-panel" id="vaerktoejer" data-section>
+  <div class="container">
+    <p class="label" data-reveal>Egne værktøjer</p>
+    <h2 class="h2" data-mask><span>Værktøjer, jeg har bygget</span></h2>
+    <p class="lede measure" data-reveal>Når en arbejdsgang er tung, udvikler jeg et værktøj til den. Jeg kan ikke selv kode, så jeg bygger dem i fritiden sammen med Claude Code.</p>
+
+    <article class="tool">
+      <div class="tool-text">
+        <h3 class="h3 tool-name" data-reveal>RFAtool</h3>
+        <dl class="ps" data-reveal>
+          <dt>Problemet</dt>
+          <dd>Revit-families ligger i mapper, og man skal vide, hvor man skal lede.</dd>
+          <dt>Løsningen</dt>
+          <dd>RFAtool indekserer families i den eksisterende mappestruktur og gør dem søgbare.</dd>
+        </dl>
+        <button class="shot" type="button" id="shot-rfatool" hidden aria-label="Forstør skærmbillede af RFAtool"><img alt="Skærmbillede af RFAtool" loading="lazy"><span>Rigtigt skærmbillede</span></button>
+      </div>
+      <div class="demo" id="demo-rfa" data-reveal>
+        <div class="demo-bar"><span class="demo-title">RFAtool</span><span class="badge badge-quiet">Illustration</span></div>
+        <div class="demo-body">
+          <label class="search">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="M13.5 13.5 17 17"/></svg>
+            <span class="visually-hidden">Søg i families</span>
+            <input id="rfa-input" type="search" placeholder="Søg, fx vindue 120" autocomplete="off" spellcheck="false">
+          </label>
+          <p class="demo-meta" id="rfa-count" aria-live="polite">30 af 30 families</p>
+          <div class="vlist" id="rfa-list"><div class="vlist-inner"></div><p class="vlist-empty" hidden>Ingen families matcher.</p></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="tool tool-flip">
+      <div class="tool-text">
+        <h3 class="h3 tool-name" data-reveal>KNtool</h3>
+        <dl class="ps" data-reveal>
+          <dt>Problemet</dt>
+          <dd>Det er tungt at oprette og vedligeholde keynotes i Revit.</dd>
+          <dt>Løsningen</dt>
+          <dd>KNtool er en brugerflade, der gør begge dele lettere.</dd>
+        </dl>
+        <button class="shot" type="button" id="shot-kntool" hidden aria-label="Forstør skærmbillede af KNtool"><img alt="Skærmbillede af KNtool" loading="lazy"><span>Rigtigt skærmbillede</span></button>
+      </div>
+      <div class="demo" id="demo-kn" data-reveal>
+        <div class="demo-bar"><span class="demo-title">KNtool</span><span class="badge badge-quiet">Illustration</span></div>
+        <div class="demo-body">
+          <div class="kn-actions">
+            <p class="demo-meta" id="kn-count" aria-live="polite">12 keynotes</p>
+            <button class="mini-btn" type="button" id="kn-add"><span class="plus"></span>Ny keynote</button>
+          </div>
+          <div class="vlist" id="kn-list"><div class="vlist-inner"></div></div>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ============ KOMPETENCER ============ -->
+<section class="section" id="kompetencer" data-section>
+  <div class="container">
+    <p class="label" data-reveal>Kompetencer</p>
+    <h2 class="h2" data-mask><span>Værktøjskassen</span></h2>
+
+    <div class="filters" role="group" aria-label="Filtrér software" data-reveal>
+      <button class="filter" type="button" data-filter="alle" aria-pressed="true">Alle</button>
+      <button class="filter" type="button" data-filter="projektering" aria-pressed="false">Projektering</button>
+      <button class="filter" type="button" data-filter="lca" aria-pressed="false">LCA</button>
+      <button class="filter" type="button" data-filter="3d" aria-pressed="false">3D og scanning</button>
+      <button class="filter" type="button" data-filter="ai" aria-pressed="false">AI</button>
+    </div>
+
+    <ul class="tags" id="tags" data-reveal>
+      <li class="tag" data-cat="projektering"><b>Revit</b><span>avanceret, dagligt</span></li>
+      <li class="tag" data-cat="projektering"><b>Dynamo</b><span>grundlæggende</span></li>
+      <li class="tag" data-cat="projektering 3d"><b>Autodesk Forma/ACC</b><span>terræn og projektplatform</span></li>
+      <li class="tag" data-cat="lca"><b>RealtimeLCA</b></li>
+      <li class="tag" data-cat="lca"><b>LCAbyg</b></li>
+      <li class="tag" data-cat="lca"><b>LCCbyg</b></li>
+      <li class="tag" data-cat="3d"><b>Matterport</b><span>3D-scanning</span></li>
+      <li class="tag" data-cat="3d"><b>Blender</b></li>
+      <li class="tag" data-cat="3d"><b>Fusion 360</b></li>
+      <li class="tag" data-cat="ai"><b>Claude Code</b><span>egne værktøjer</span></li>
+    </ul>
+
+    <dl class="facts">
+      <div data-reveal><dt>Kurser</dt><dd>Revit Koter og Koordinator (NTI). LCA og bæredygtighed (Grønne kompetencer).</dd></div>
+      <div data-reveal><dt>Sprog</dt><dd>Dansk er mit modersmål. Engelsk: stærkt skriftligt og sikkert mundtligt.</dd></div>
+      <div data-reveal><dt>Fritid</dt><dd>3D-print, udvikling af værktøjer og computerspil, guitar.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============ SÅDAN ER SIDEN LAVET ============ -->
+<section class="section section-panel" id="saadan" data-section>
+  <div class="container made">
+    <div class="made-text">
+      <p class="label" data-reveal>Sådan er siden lavet</p>
+      <h2 class="h2" data-mask><span>Bygget ud fra en brief</span></h2>
+      <p class="lede" data-reveal>Jeg skrev en brief med fakta, krav og en tjekliste. Claude Code byggede, testede og udgav siden.</p>
+      <p data-reveal>Samme arbejdsmetode bruger jeg, når jeg udvikler mine Revit-værktøjer.</p>
+      <p data-reveal id="github-wrap" hidden><a class="link" id="github-link" href="#" rel="noopener">Se koden på GitHub</a></p>
+    </div>
+    <div class="term" id="term" data-reveal role="img" aria-label="Terminalvindue, der viser sidens git-historik">
+      <div class="term-bar"><i></i><i></i><i></i><span>ansoegning · git</span></div>
+      <div class="term-body" id="term-body" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ KONTAKT ============ -->
+<section class="section contact" id="kontakt" data-section>
+  <div class="container">
+    <p class="label" data-reveal>Kontakt</p>
+    <h2 class="h1" data-mask><span>Lad os tage en snak</span></h2>
+    <p class="lede measure" data-reveal>Ring eller skriv, så fortæller jeg gerne mere.</p>
+    <div class="btn-row contact-btns" data-reveal>
+      <a class="btn btn-primary magnetic" id="mail-btn" href="mailto:joeljurgensen@gmail.com"><span data-cfg="email">joeljurgensen@gmail.com</span></a>
+      <a class="btn btn-ghost magnetic" id="tel-btn" href="tel:+4551215641"><span data-cfg="telefon">+45 51 21 56 41</span></a>
+      <button class="btn btn-ghost magnetic" id="copy-btn" type="button"><span id="copy-text">Kopiér e-mail</span></button>
+    </div>
+    <p class="visually-hidden" id="copy-status" role="status" aria-live="polite"></p>
+    <p class="contact-city" data-reveal><span data-cfg="by">Holstebro</span></p>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <p><span data-cfg="navn">Joel Jürgensen</span> · <span data-cfg="by">Holstebro</span></p>
+    <p>Lavet med AI ud fra min egen brief</p>
+  </div>
+</footer>
+
+<!-- Lightbox til skærmbilleder -->
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Skærmbillede">
+  <button class="lightbox-close" type="button" aria-label="Luk">Luk</button>
+  <img alt="">
+</div>
+
+</body>
+</html>
