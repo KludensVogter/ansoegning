@@ -806,7 +806,7 @@ button.kn-add:hover { background: #F4F4F5; }
 .term-bar { display: flex; align-items: center; gap: 7px; height: 40px; padding: 0 16px; border-bottom: 1px solid rgba(250, 250, 247, 0.1); }
 .term-bar i { width: 10px; height: 10px; border-radius: 50%; background: rgba(250, 250, 247, 0.22); }
 .term-bar span { margin-left: 10px; font: 500 0.75rem/1 var(--mono); color: #A8B3A3; }
-.term-body { padding: 16px 20px 20px; font: 400 0.8125rem/1.7 var(--mono); }
+.term-body { padding: 16px 20px 20px; font: 400 0.8125rem/1.7 var(--mono); max-height: min(calc(100svh - 240px), 460px); overflow: hidden; }
 .term-line { display: flex; gap: 12px; }
 .term-line .hash { color: var(--green-soft); flex: none; }
 .term-line .msg { min-width: 0; overflow-wrap: anywhere; }

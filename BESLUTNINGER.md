@@ -38,7 +38,7 @@ Valg, der afviger fra eller præciserer `BRIEF.md`. Én linje begrundelse pr. va
 - **Mørkere grøn (#3F6A2E) til små tekster.** Accentfarven #4E7D3A giver for lav kontrast på den grågrønne flade.
 - **`?motion=1` og `?motion=0` tvinger animationer til og fra.** Kun til test. Joels Windows har "reducér bevægelse" slået til, så uden `?motion=1` ser han den rolige udgave.
 - **Git-forfatter er sat lokalt til Joels navn og e-mail.** Der var ingen git-identitet på maskinen.
-- **Terminalen viser historikken til og med næstsidste commit.** En commit kan ikke indeholde sin egen besked på forhånd.
+- **Terminalen viser historikken til og med næstsidste commit.** En commit kan ikke indeholde sin egen besked på forhånd. Commits, der kun opdaterer selve listen ("Terminal: …"), vises ikke.
 
 ## Designgennemgang
 
