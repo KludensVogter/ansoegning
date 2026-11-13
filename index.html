@@ -77,7 +77,7 @@ else document.documentElement.classList.add("reduced");
       <a href="#bidrag">Bidrag</a>
       <a href="#vaerktoejer">Værktøjer</a>
       <a href="#kompetencer">Kompetencer</a>
-      <a href="#saadan">Metode</a>
+      <a href="#saadan">Om siden</a>
       <a href="#kontakt">Kontakt</a>
     </nav>
     <button class="burger" id="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Åbn menu">
@@ -94,7 +94,7 @@ else document.documentElement.classList.add("reduced");
     <a href="#bidrag" style="--i:2">Bidrag</a>
     <a href="#vaerktoejer" style="--i:3">Værktøjer</a>
     <a href="#kompetencer" style="--i:4">Kompetencer</a>
-    <a href="#saadan" style="--i:5">Metode</a>
+    <a href="#saadan" style="--i:5">Om siden</a>
     <a href="#kontakt" style="--i:6">Kontakt</a>
   </nav>
   <p class="menu-foot" style="--i:7"><span data-cfg="by">Holstebro</span> · Lavet med AI</p>
@@ -128,26 +128,28 @@ else document.documentElement.classList.add("reduced");
     <div class="hero-model" data-intro>
       <div class="stage" id="stage">
         <!-- Vises kun, hvis WebGL ikke virker -->
-        <svg class="house-svg" id="house-svg" viewBox="0 0 400 360" role="img" aria-label="Tegning af et hus opdelt i fagmodeller">
+        <svg class="house-svg" id="house-svg" viewBox="0 0 400 360" role="img" aria-label="Tegning af et parcelhus opdelt i fagmodeller">
           <g class="svg-grid" stroke="#D5DBCF" stroke-width="1">
-            <path d="M20 322H380M40 334H360M60 346H340"/>
+            <path d="M20 300H380M40 314H360M60 328H340"/>
           </g>
-          <g data-layer="konstruktion" class="svg-part p-fund"><rect x="58" y="298" width="284" height="22" fill="#9AA19A"/></g>
+          <g data-layer="konstruktion" class="svg-part p-fund">
+            <rect x="62" y="270" width="276" height="12" fill="#9AA19A"/>
+            <rect x="62" y="282" width="26" height="30" fill="#868D86"/>
+            <rect x="312" y="282" width="26" height="30" fill="#868D86"/>
+          </g>
           <g data-layer="arkitekt" class="svg-part p-wall">
-            <rect x="70" y="184" width="260" height="114" fill="#F0EBE1" stroke="#C9C2B2" stroke-width="2"/>
-            <rect x="104" y="218" width="34" height="80" fill="#D8D0BF"/>
-            <rect x="176" y="218" width="96" height="46" fill="#C7D8DA"/>
-          </g>
-          <g data-layer="mep" class="svg-part p-mep" fill="none" stroke="#E08A2E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M96 196H292V86"/>
-          </g>
-          <g data-layer="konstruktion" class="svg-part p-deck"><rect x="70" y="172" width="260" height="12" fill="#9AA19A"/></g>
-          <g data-layer="arkitekt" class="svg-part p-gable">
-            <path d="M70 172V148L200 62 330 148V172Z" fill="#F0EBE1" stroke="#C9C2B2" stroke-width="2"/>
-            <rect x="178" y="108" width="44" height="38" fill="#C7D8DA"/>
+            <rect x="66" y="184" width="268" height="86" fill="#F0EBE1" stroke="#C9C2B2" stroke-width="2"/>
+            <rect x="96" y="206" width="34" height="64" fill="#D8D0BF"/>
+            <rect x="160" y="206" width="70" height="38" fill="#C7D8DA"/>
+            <rect x="258" y="206" width="48" height="38" fill="#C7D8DA"/>
           </g>
           <g data-layer="tag" class="svg-part p-roof">
-            <path d="M48 160 200 58 352 160" fill="none" stroke="#4E7D3A" stroke-width="14" stroke-linejoin="miter"/>
+            <path d="M66 184 200 106 334 184Z" fill="#E3EBDD" stroke="#4E7D3A" stroke-width="2"/>
+            <path d="M44 190 200 98 356 190" fill="none" stroke="#4E7D3A" stroke-width="12" stroke-linejoin="miter"/>
+          </g>
+          <g data-layer="mep" class="svg-part p-mep" fill="none" stroke="#E08A2E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M118 170H282M236 170V96"/>
+            <rect x="228" y="84" width="16" height="12" fill="#E08A2E" stroke="none"/>
           </g>
         </svg>
         <div class="house-label" id="house-label" aria-hidden="true"></div>
@@ -184,7 +186,7 @@ else document.documentElement.classList.add("reduced");
         <p class="tab-panel is-active" role="tabpanel">Jeg håndterer fagmodeller i det daglige, fx når spærleverandørens model skal passe med arkitektmodellen. Jeg tegner også selv MEP- og ING-modeller op ud fra skitser. Jo tidligere modellerne passer sammen, jo færre overraskelser er der på byggepladsen.</p>
         <p class="tab-panel" role="tabpanel">Jeg bruger BIM-modellen aktivt til at identificere bygningsdele og kontrollere projektet. Som tømrer har jeg selv bygget efter andres tegninger. Derfor går jeg op i, at projektet hænger sammen, før det når byggepladsen.</p>
         <p class="tab-panel" role="tabpanel">Jeg trækker mængder direkte ud af modellen og er ansvarlig for LCA-beregningerne, fra projektering til færdigmelding. Jeg udvikler også parametriske Revit-families med indbyrdes afhængigheder.</p>
-        <p class="tab-panel" role="tabpanel">Jeg motiveres af at forbedre digitale arbejdsgange, både for at spare tid og for at sikre sammenhæng i projektet. Når en arbejdsgang er tung, udvikler jeg gerne et værktøj til den. Jeg lærer ofte nye Revit-funktioner tidligt.</p>
+        <p class="tab-panel" role="tabpanel">Jeg motiveres af at forbedre digitale arbejdsgange, både for at spare tid og for at sikre sammenhæng i projektet. Når en arbejdsgang er tung, udvikler jeg gerne et værktøj til den.</p>
       </div>
     </div>
   </div>
@@ -335,7 +337,7 @@ else document.documentElement.classList.add("reduced");
     <div class="tool-text sheet-main">
       <p class="label" data-in style="--i:0">Værktøjer, jeg har bygget · 1 af 2</p>
       <h2 class="h2 tool-name" data-mask><span>RFAtool</span></h2>
-      <p class="tool-intro" data-in style="--i:2">Når en arbejdsgang er tung, udvikler jeg et værktøj til den. Jeg bygger dem i fritiden med Claude Code.</p>
+      <p class="tool-intro" data-in style="--i:2">Når en arbejdsgang er tung, udvikler jeg et værktøj til den. Jeg bygger dem i fritiden med Claude Code, og i dag bruger både jeg og mine kolleger dem.</p>
       <div class="tabs" data-tabs data-in style="--i:3">
         <div class="tab-list" role="tablist" aria-label="RFAtool">
           <button class="tab" type="button" role="tab" aria-selected="true">Problemet</button>
@@ -352,16 +354,14 @@ else document.documentElement.classList.add("reduced");
       </div>
     </div>
     <div class="demo sheet" id="demo-rfa" data-in style="--i:2">
-      <div class="demo-bar"><span class="demo-title">RFAtool</span><span class="badge badge-quiet">Illustration</span><button class="sheet-close" type="button" aria-label="Luk demoen"><span class="plus is-x"></span></button></div>
-      <div class="demo-body">
-        <label class="search">
-          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="9" cy="9" r="5.5"/><path d="M13.5 13.5 17 17"/></svg>
-          <span class="visually-hidden">Søg i families</span>
-          <input id="rfa-input" type="search" placeholder="Søg, fx vindue 120" autocomplete="off" spellcheck="false">
-        </label>
-        <p class="demo-meta" id="rfa-count" aria-live="polite">30 families</p>
-        <div class="vlist" id="rfa-list"><div class="vlist-inner"></div><p class="vlist-empty" hidden>Ingen families matcher.</p></div>
+      <div class="app-titlebar">
+        <i class="app-logo app-logo-rfa" aria-hidden="true"></i><span class="app-name">RFAtool</span>
+        <span class="badge">Kopi · eksempeldata</span>
+        <span class="app-winctl" aria-hidden="true"><i></i><i></i><i></i></span>
+        <button class="sheet-close" type="button" aria-label="Luk demoen"><span class="plus is-x"></span></button>
       </div>
+      <div class="app-menubar" aria-hidden="true"><span>Filer</span><span>Vis</span></div>
+      <div class="app" id="app-rfa"></div>
     </div>
   </div>
 </section>
@@ -388,14 +388,14 @@ else document.documentElement.classList.add("reduced");
       </div>
     </div>
     <div class="demo sheet" id="demo-kn" data-in style="--i:2">
-      <div class="demo-bar"><span class="demo-title">KNtool</span><span class="badge badge-quiet">Illustration</span><button class="sheet-close" type="button" aria-label="Luk demoen"><span class="plus is-x"></span></button></div>
-      <div class="demo-body">
-        <div class="kn-actions">
-          <p class="demo-meta" id="kn-count" aria-live="polite">10 keynotes</p>
-          <button class="mini-btn" type="button" id="kn-add"><span class="plus"></span>Ny keynote</button>
-        </div>
-        <div class="vlist" id="kn-list"><div class="vlist-inner"></div></div>
+      <div class="app-titlebar">
+        <i class="app-logo app-logo-kn" aria-hidden="true"></i><span class="app-name">KNtool</span>
+        <span class="badge">Kopi · eksempeldata</span>
+        <span class="app-winctl" aria-hidden="true"><i></i><i></i><i></i></span>
+        <button class="sheet-close" type="button" aria-label="Luk demoen"><span class="plus is-x"></span></button>
       </div>
+      <div class="app-menubar" aria-hidden="true"><span>Fil</span><span>Redigér</span><span>Vis</span><span>Hjælp</span></div>
+      <div class="app" id="app-kn"></div>
     </div>
   </div>
 </section>
@@ -444,25 +444,22 @@ else document.documentElement.classList.add("reduced");
   </div>
 </section>
 
-<!-- ============ 8 · SÅDAN ARBEJDER JEG MED AI ============ -->
-<section class="scene" id="saadan" data-scene data-tone="panel" data-title="Metode">
+<!-- ============ 8 · SÅDAN ER SIDEN LAVET ============ -->
+<section class="scene" id="saadan" data-scene data-tone="panel" data-title="Om siden">
   <div class="scene-inner container made sheet-host">
     <div class="made-text sheet-main">
-      <p class="label" data-in style="--i:0">Sådan arbejder jeg med AI</p>
-      <h2 class="h2" data-mask><span>Ikke én prompt. Mange runder.</span></h2>
-      <p class="lede" data-in style="--i:2">At lave en app med Claude Code er for mig en iterativ proces. Jeg beskriver, hvad jeg vil have, tester resultatet og giver nye instrukser. Så tester jeg igen.</p>
-      <ol class="loop" data-in style="--i:3" aria-label="Arbejdsgangen, der gentages">
-        <li>Beskriv</li><li>Test</li><li>Kommentér</li><li>Test igen</li>
-      </ol>
-      <p class="made-note" data-in style="--i:4">Det er udvikling over mange timer, hvor appen bliver bedre for hver runde. Sådan er KNtool og RFAtool blevet til, og i dag bruger både jeg og mine kolleger dem.</p>
-      <div class="tool-actions" data-in style="--i:5">
-        <button class="btn btn-primary sheet-open" type="button"><span>Se sidens egne runder</span></button>
+      <p class="label" data-in style="--i:0">Sådan er siden lavet</p>
+      <h2 class="h2" data-mask><span>Udviklet i mange runder</span></h2>
+      <p class="lede" data-in style="--i:2">Jeg har udviklet siden med Claude Code. Det er en iterativ proces med mange runder af test og rettelser.</p>
+      <p class="made-note" data-in style="--i:3">Samme arbejdsmetode bruger jeg, når jeg udvikler mine Revit-værktøjer.</p>
+      <div class="tool-actions" data-in style="--i:4">
+        <button class="btn btn-primary sheet-open" type="button"><span>Se git-historikken</span></button>
       </div>
-      <p data-in style="--i:5" id="github-wrap" hidden><a class="link" id="github-link" href="#" rel="noopener">Se koden på GitHub</a></p>
+      <p data-in style="--i:4" id="github-wrap" hidden><a class="link" id="github-link" href="#" rel="noopener">Se koden på GitHub</a></p>
     </div>
     <div class="made-side sheet" id="term-wrap" data-in style="--i:2">
       <div class="term-head">
-        <p class="term-cap">Denne side er lavet på samme måde. Her er dens egne runder.</p>
+        <p class="term-cap">Sidens git-historik</p>
         <button class="sheet-close" type="button" aria-label="Luk historikken"><span class="plus is-x"></span></button>
       </div>
       <div class="term" id="term" role="img" aria-label="Terminalvindue, der viser sidens git-historik">
