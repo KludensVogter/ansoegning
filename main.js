@@ -18,7 +18,10 @@
     ['589f2a7', 'Finpudsning: to runder designgennemgang, delingsbillede og beslutningslog'],
     ['f29806b', 'Terminal: den rigtige git-historik indsat'],
     ['fdd7c42', 'Fokuspunkter: hvert afsnit fylder én skærm, zoomer i fokus ved scroll, detaljer bag knapper og hover'],
-    ['d67b60f', 'Skærmbilleder af de rigtige apps, nye tekster, infovinduer og fokuspunkt om arbejdsmetoden']
+    ['d67b60f', 'Skærmbilleder af de rigtige apps, nye tekster, infovinduer og fokuspunkt om arbejdsmetoden'],
+    ['9c454b6', 'Terminal: git-historikken opdateret'],
+    ['11bf387', '3D-hus: parcelhus i ét plan med fundament, hulmur, gitterspær og ventilation'],
+    ['4e0cd53', 'Kopier af appernes brugerflade, neutral tekst om arbejdsmetoden og startfil']
   ];
 
   const $ = (s, r = document) => r.querySelector(s);
