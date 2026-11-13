@@ -1,10 +1,17 @@
 /* =====================================================================
    house.js – 3D-huset i hero (Three.js r160, ingen build)
-   Huset er bygget af kasser i koden og delt i fire fagmodeller:
-   Konstruktion (grå), Arkitekt (hvid/beige), MEP (orange) og Tag (grøn).
+   Et parcelhus i ét plan, 11,7 × 7,4 m, bygget af geometri i koden og
+   delt i fire fagmodeller:
+     Konstruktion (grå)      stribefundament, sokkel og terrændæk
+     Arkitekt (hvid/beige)   hulmur med vinduer og døre, skillevægge
+     MEP (orange)            ventilation: aggregat, kanaler, ventiler, taghætter
+     Tag (grøn)              rem, gitterspær, lægter, gavle og tagdækning
+   Mål i meter. y = 0 er terræn, og gitteret ligger i terrænhøjde. Fundamentet
+   er skjult under terræn, indtil lagene adskilles og det løftes fri.
    ===================================================================== */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 
 const LAYERS = {
   konstruktion: { label: 'Konstruktion', color: 0x9aa19a },
@@ -25,180 +32,364 @@ export function init(stage, opts = {}) {
   const labelEl = opts.label;
 
   const canvas = document.createElement('canvas');
-  canvas.setAttribute('aria-label', 'Interaktiv 3D-model af et hus opdelt i fagmodeller. Træk for at dreje.');
+  canvas.setAttribute('aria-label', 'Interaktiv 3D-model af et parcelhus opdelt i fagmodeller. Træk for at dreje.');
   canvas.setAttribute('role', 'img');
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true }); /* kaster fejl uden WebGL */
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.localClippingEnabled = true;                 /* fundamentet skæres af i terrænhøjde */
   stage.prepend(canvas);
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 0.1, 200);
   const TARGET = new THREE.Vector3(0, 2.7, 0);
-  const DIST = 29;
+  const DIST = 33;
   camera.position.setFromSphericalCoords(DIST, THREE.MathUtils.degToRad(66), THREE.MathUtils.degToRad(38)).add(TARGET);
 
   scene.add(new THREE.HemisphereLight(0xffffff, 0xd9dfd2, 1.15));
   const sun = new THREE.DirectionalLight(0xffffff, 1.9);
-  sun.position.set(8, 16, 7);
+  sun.position.set(10, 15, 11);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
-  sun.shadow.camera.left = -12; sun.shadow.camera.right = 12;
-  sun.shadow.camera.top = 16; sun.shadow.camera.bottom = -8;
-  sun.shadow.camera.near = 1; sun.shadow.camera.far = 50;
-  sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.03; sun.shadow.radius = 5;
+  sun.shadow.mapSize.set(2048, 2048);
+  sun.shadow.camera.left = -15; sun.shadow.camera.right = 15;
+  sun.shadow.camera.top = 18; sun.shadow.camera.bottom = -12;
+  sun.shadow.camera.near = 1; sun.shadow.camera.far = 60;
+  sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.03; sun.shadow.radius = 4;
   scene.add(sun);
 
   /* Alt står i én gruppe, så modellen kan skaleres, når lagene adskilles */
   const world = new THREE.Group();
   scene.add(world);
 
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.ShadowMaterial({ opacity: 0.16 }));
+  /* ---------- Hovedmål ---------- */
+  const L = 11.7, B = 7.4;            /* udvendige mål */
+  const FUND = -0.9;                  /* underkant fundament: frostfri dybde */
+  const FLOOR = 0.2;                  /* overkant sokkel og terrændæk */
+  const WALL_TOP = 2.7;               /* overkant mur: 2,5 m over gulv */
+  const WT = 0.4;                     /* hulmur: 110 formur + 190 isolering + 100 bagmur */
+
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(70, 70), new THREE.ShadowMaterial({ opacity: 0.16 }));
   ground.rotation.x = -Math.PI / 2;
-  ground.position.y = -0.6;
+  ground.position.y = 0;
   ground.receiveShadow = true;
   world.add(ground);
-  const grid = new THREE.GridHelper(22, 22, 0xc4ccbd, 0xd5dbcf);
-  grid.position.y = -0.595;
+  const grid = new THREE.GridHelper(26, 26, 0xc4ccbd, 0xd5dbcf);
+  grid.position.y = 0.005;
   grid.material.transparent = true;
   grid.material.opacity = 0.7;
   world.add(grid);
 
-  /* ---------- Bygningsdele ---------- */
+  /* ---------- Byggeklodser ---------- */
   const parts = [];
   const pickables = [];
   const layerState = {};
   Object.keys(LAYERS).forEach((k) => { layerState[k] = { v: 1, hl: 0 }; });
 
-  const makePart = (layer, explodeY, order) => {
-    const group = new THREE.Group();
-    world.add(group);
-    const mat = new THREE.MeshStandardMaterial({ color: LAYERS[layer].color, roughness: 0.88, metalness: 0 });
-    mat.emissive = new THREE.Color(LAYERS[layer].color);
-    mat.emissiveIntensity = 0;
-    const part = { layer, group, explodeY, order, b: reduced ? 1 : 0, mats: [{ m: mat, base: 1 }], mat };
-    parts.push(part);
-    return part;
-  };
-  const extraMat = (part, color, base, opts2 = {}) => {
-    const m = new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0, transparent: base < 1, opacity: base, ...opts2 });
+  /* Et materiale pr. overflade. base < 1 er glas: kaster ikke skygge og kan ikke rammes af musen */
+  const material = (part, color, base = 1, roughness = 0.88) => {
+    const m = new THREE.MeshStandardMaterial({ color, roughness, metalness: 0, transparent: base < 1, opacity: base });
+    m.emissive = new THREE.Color(color);
+    m.emissiveIntensity = 0;
     part.mats.push({ m, base });
     return m;
   };
-  const addMesh = (part, geo, x, y, z, mat, pick = true) => {
-    const mesh = new THREE.Mesh(geo, mat || part.mat);
-    mesh.position.set(x, y, z);
-    mesh.castShadow = pick;
-    mesh.receiveShadow = true;
-    mesh.userData.layer = part.layer;
-    part.group.add(mesh);
-    if (pick) pickables.push(mesh);
-    return mesh;
+  const makePart = (layer, explodeY, order) => {
+    const group = new THREE.Group();
+    world.add(group);
+    const part = { layer, group, explodeY, order, b: reduced ? 1 : 0, mats: [], meshes: [], buckets: new Map() };
+    part.mat = material(part, LAYERS[layer].color);
+    parts.push(part);
+    return part;
   };
-  const box = (part, w, h, d, x, y, z, mat, pick) => addMesh(part, new THREE.BoxGeometry(w, h, d), x, y, z, mat, pick);
 
-  const W = 8, D = 6, T = 0.3;
-
-  /* En væg med huller: piller mellem åbningerne, brystning under og overligger over */
-  const wall = (part, axis, fixed, length, y0, h, openings, glassMat, doorMat) => {
-    const put = (u, y, w, hh, mat, thick = T, pick = true) => {
-      if (w <= 0.001 || hh <= 0.001) return;
-      if (axis === 'x') box(part, w, hh, thick, u, y, fixed, mat, pick);
-      else box(part, thick, hh, w, fixed, y, u, mat, pick);
-    };
-    const sorted = openings.slice().sort((a, b) => a.c - b.c);
-    let cursor = -length / 2;
-    sorted.forEach((o) => {
-      const left = o.c - o.w / 2;
-      put((cursor + left) / 2, y0 + h / 2, left - cursor, h);                      /* pille */
-      put(o.c, y0 + o.sill / 2, o.w, o.sill);                                      /* brystning */
-      put(o.c, y0 + (o.head + h) / 2, o.w, h - o.head);                            /* overligger */
-      put(o.c, y0 + (o.sill + o.head) / 2, o.w, o.head - o.sill, o.door ? doorMat : glassMat, o.door ? 0.08 : 0.05, false);
-      cursor = o.c + o.w / 2;
+  /* Geometrien samles pr. materiale og flettes til ét net til sidst (få tegnekald) */
+  const put = (part, geo, mat) => {
+    const m = mat || part.mat;
+    let list = part.buckets.get(m);
+    if (!list) part.buckets.set(m, (list = []));
+    list.push(geo.index ? geo.toNonIndexed() : geo);
+  };
+  const box = (part, w, h, d, x, y, z, mat) => {
+    if (w <= 0.001 || h <= 0.001 || d <= 0.001) return;
+    put(part, new THREE.BoxGeometry(w, h, d).translate(x, y, z), mat);
+  };
+  /* Kasse, der følger tagfladen: drejet om x-aksen */
+  const slopeBox = (part, w, h, d, rx, x, y, z, mat) =>
+    put(part, new THREE.BoxGeometry(w, h, d).rotateX(rx).translate(x, y, z), mat);
+  /* Profil tegnet i (z, y) og trukket ud langs x, centreret om x */
+  const prismX = (part, pts, t, x, mat) => {
+    const shape = new THREE.Shape(pts.map(([z, y]) => new THREE.Vector2(z, y)));
+    const geo = new THREE.ExtrudeGeometry(shape, { depth: t, bevelEnabled: false });
+    geo.rotateY(-Math.PI / 2).translate(x + t / 2, 0, 0);
+    put(part, geo, mat);
+  };
+  /* En ring langs husets omkreds, fx sokkel eller fundament */
+  const ring = (part, hx, hz, w, y0, y1, mat) => {
+    const h = y1 - y0, y = (y0 + y1) / 2;
+    [1, -1].forEach((s) => {
+      box(part, 2 * hx, h, w, 0, y, s * (hz - w / 2), mat);
+      box(part, w, h, 2 * (hz - w), s * (hx - w / 2), y, 0, mat);
     });
-    put((cursor + length / 2) / 2, y0 + h / 2, length / 2 - cursor, h);
+  };
+  /* Et vægstykke med åbninger: piller, brystning og overligger */
+  const wallRun = (part, axis, fixed, from, to, thick, openings, mat) => {
+    const seg = (u0, u1, ya, yb) => {
+      if (u1 - u0 <= 0.001 || yb - ya <= 0.001) return;
+      const u = (u0 + u1) / 2, y = (ya + yb) / 2;
+      if (axis === 'x') box(part, u1 - u0, yb - ya, thick, u, y, fixed, mat);
+      else box(part, thick, yb - ya, u1 - u0, fixed, y, u, mat);
+    };
+    let cursor = from;
+    openings.slice().sort((a, b) => a.c - b.c).forEach((o) => {
+      const l = o.c - o.w / 2, r = o.c + o.w / 2;
+      seg(cursor, l, FLOOR, WALL_TOP);                       /* pille */
+      seg(l, r, FLOOR, FLOOR + o.sill);                      /* brystning */
+      seg(l, r, FLOOR + o.head, WALL_TOP);                   /* overligger */
+      cursor = r;
+    });
+    seg(cursor, to, FLOOR, WALL_TOP);
   };
 
-  /* 1 · Fundament og gulv (Konstruktion) */
-  const fundament = makePart('konstruktion', 0, 0);
-  box(fundament, W + 0.6, 0.6, D + 0.6, 0, -0.3, 0);
-  const gulv = makePart('konstruktion', 0.8, 1);
-  box(gulv, W, 0.2, D, 0, 0.1, 0);
+  /* ================= 1 · Konstruktion ================= */
+  /* Stribefundament i beton til frostfri dybde og sokkel af letklinkerblokke */
+  const fundament = makePart('konstruktion', -FUND, 0);  /* løftes op på terræn, når lagene adskilles */
+  const beton = material(fundament, 0x8b928b);
+  const terrain = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+  fundament.mats.forEach(({ m }) => { m.clippingPlanes = [terrain]; m.clipShadows = true; });
+  ring(fundament, L / 2 + 0.05, B / 2 + 0.05, 0.5, FUND, -0.4, beton);
+  ring(fundament, L / 2, B / 2, WT, -0.4, FLOOR);
 
-  /* 2 · Vægge i stueplan med vindueshuller (Arkitekt) */
-  const stue = makePart('arkitekt', 1.9, 2);
-  const glas1 = extraMat(stue, 0xbcd3d6, 0.42, { roughness: 0.15 });
-  const doer = extraMat(stue, 0xcfc6b3, 1);
-  const Y0 = 0.2, H = 2.6;
-  wall(stue, 'x', D / 2 - T / 2, W, Y0, H, [
-    { c: -2.3, w: 1.0, sill: 0, head: 2.1, door: true },
-    { c: 1.2, w: 2.6, sill: 0.75, head: 2.1 }
-  ], glas1, doer);
-  wall(stue, 'x', -D / 2 + T / 2, W, Y0, H, [
-    { c: -2.1, w: 1.4, sill: 0.9, head: 2.1 },
-    { c: 2.1, w: 1.4, sill: 0.9, head: 2.1 }
-  ], glas1, doer);
-  wall(stue, 'z', W / 2 - T / 2, D - 2 * T, Y0, H, [{ c: 0, w: 1.8, sill: 0.9, head: 2.1 }], glas1, doer);
-  wall(stue, 'z', -W / 2 + T / 2, D - 2 * T, Y0, H, [{ c: 0.6, w: 1.4, sill: 0.9, head: 2.1 }], glas1, doer);
+  /* Terrændæk mellem soklerne: 300 mm trykfast isolering og 100 mm betonplade */
+  const terraen = makePart('konstruktion', 1.9, 1);
+  const eps = material(terraen, 0xc8cdc6);
+  box(terraen, L - 2 * WT, 0.3, B - 2 * WT, 0, FLOOR - 0.25, 0, eps);
+  box(terraen, L - 2 * WT, 0.1, B - 2 * WT, 0, FLOOR - 0.05, 0);
 
-  /* 3 · MEP-rør (orange) */
-  const mep = makePart('mep', 2.9, 5);
-  const pipe = (from, to, r = 0.09) => {
-    const a = new THREE.Vector3(...from), b = new THREE.Vector3(...to);
-    const len = a.distanceTo(b);
-    const mesh = addMesh(mep, new THREE.CylinderGeometry(r, r, len, 14), 0, 0, 0);
-    mesh.position.copy(a).add(b).multiplyScalar(0.5);
-    mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize());
-    [a, b].forEach((p) => addMesh(mep, new THREE.SphereGeometry(r * 1.25, 14, 10), p.x, p.y, p.z));
+  /* ================= 2 · Arkitekt ================= */
+  const vaegge = makePart('arkitekt', 3.0, 2);
+  const iso = material(vaegge, 0xe3d9b8);
+  const bagmur = material(vaegge, 0xf8f6f0);
+  const karm = material(vaegge, 0xffffff, 1, 0.6);
+  const doer = material(vaegge, 0xcfc6b3, 1, 0.7);
+  const saal = material(vaegge, 0xd8d1c2);
+  const glas = material(vaegge, 0xbcd3d6, 0.42, 0.15);
+
+  /* Åbninger: c = midte langs facaden, sill/head = højde over gulv */
+  const front = [                                        /* z = +B/2 */
+    { c: -3.3, w: 2.6, sill: 0.6, head: 2.1 },           /* stue */
+    { c: 0.65, w: 1.0, sill: 0, head: 2.1, door: true }, /* hoveddør til entré */
+    { c: 3.65, w: 1.4, sill: 0.9, head: 2.1 }            /* værelse */
+  ];
+  const back = [                                         /* z = -B/2 */
+    { c: -4.0, w: 1.6, sill: 1.1, head: 2.1 },           /* køkken */
+    { c: -1.8, w: 1.8, sill: 0, head: 2.1 },             /* terrassedør */
+    { c: 0.65, w: 0.6, sill: 1.3, head: 2.1 },           /* bad */
+    { c: 3.65, w: 1.4, sill: 0.9, head: 2.1 }            /* værelse */
+  ];
+  const west = [{ c: 0, w: 2.0, sill: 0.6, head: 2.1 }]; /* x = -L/2, stue */
+  const east = [{ c: -1.5, w: 1.2, sill: 0.9, head: 2.1 }];
+
+  /* Hulmur i tre lag, hvert lag som en ring */
+  [[0, 0.11, vaegge.mat], [0.11, 0.3, iso], [0.3, WT, bagmur]].forEach(([a, b, mat]) => {
+    const t = b - a, m = (a + b) / 2;
+    wallRun(vaegge, 'x', B / 2 - m, -(L / 2 - a), L / 2 - a, t, front, mat);
+    wallRun(vaegge, 'x', -(B / 2 - m), -(L / 2 - a), L / 2 - a, t, back, mat);
+    wallRun(vaegge, 'z', L / 2 - m, -(B / 2 - b), B / 2 - b, t, east, mat);
+    wallRun(vaegge, 'z', -(L / 2 - m), -(B / 2 - b), B / 2 - b, t, west, mat);
+  });
+
+  /* Vindue eller dør: karm, poste, rude eller dørblad og sålbænk. Sidder bag formuren */
+  const glazing = (axis, face, out, o) => {
+    const n = face - out * 0.17;
+    const y0 = FLOOR + o.sill, y1 = FLOOR + o.head, ym = (y0 + y1) / 2;
+    const K = 0.05, KD = 0.1;
+    const at = (wu, h, dn, u, y, mat, nn = n) => (axis === 'x'
+      ? box(vaegge, wu, h, dn, u, y, nn, mat)
+      : box(vaegge, dn, h, wu, nn, y, u, mat));
+    at(o.w, K, KD, o.c, y1 - K / 2, karm);
+    at(o.w, K, KD, o.c, y0 + K / 2, karm);
+    [-1, 1].forEach((s) => at(K, y1 - y0 - 2 * K, KD, o.c + s * (o.w / 2 - K / 2), ym, karm));
+    if (o.door) {
+      at(o.w - 2 * K, y1 - y0 - 2 * K, 0.05, o.c, ym, doer);
+    } else {
+      const panes = Math.max(1, Math.round(o.w / 0.95));
+      for (let i = 1; i < panes; i++) at(K, y1 - y0 - 2 * K, KD, o.c - o.w / 2 + (i * o.w) / panes, ym, karm);
+      at(o.w - 2 * K, y1 - y0 - 2 * K, 0.02, o.c, ym, glas);
+    }
+    if (o.sill > 0) at(o.w + 0.06, 0.03, 0.2, o.c, y0 - 0.015, saal, face - out * 0.07);
   };
-  pipe([-3.1, 2.45, 1.6], [-3.1, 2.45, -1.3]);
-  pipe([-3.1, 2.45, -1.3], [2.6, 2.45, -1.3]);
-  pipe([2.6, 0.25, -1.3], [2.6, 6.35, -1.3]);
-  pipe([0.2, 2.45, -1.3], [0.2, 2.45, 1.2]);
+  front.forEach((o) => glazing('x', B / 2, 1, o));
+  back.forEach((o) => glazing('x', -B / 2, -1, o));
+  east.forEach((o) => glazing('z', L / 2, 1, o));
+  west.forEach((o) => glazing('z', -L / 2, -1, o));
 
-  /* 4 · Etageadskillelse (Konstruktion) */
-  const daek = makePart('konstruktion', 3.8, 3);
-  box(daek, W, 0.25, D, 0, 2.925, 0);
+  /* Skillevægge: stue/køkken mod vest, entré og bad i midten, to værelser mod øst */
+  const skille = material(vaegge, 0xfbfaf5);
+  const IX = L / 2 - WT, IZ = B / 2 - WT;                 /* indvendige mål */
+  const dør = (c, w = 0.9) => ({ c, w, sill: 0, head: 2.1 });
+  wallRun(vaegge, 'z', -0.5, -IZ, IZ, 0.1, [dør(1.0)], skille);                 /* stue | entré */
+  wallRun(vaegge, 'z', 1.8, -IZ, IZ, 0.1, [dør(1.2), dør(-0.3)], skille);       /* entré og bad | værelser */
+  wallRun(vaegge, 'x', -0.9, -0.45, 1.75, 0.1, [dør(0.65, 0.8)], skille);       /* entré | bad */
+  wallRun(vaegge, 'x', 0.35, 1.85, IX, 0.1, [], skille);                        /* værelse | værelse */
 
-  /* 5 · Trempel og gavle (Arkitekt) */
-  const sal = makePart('arkitekt', 4.9, 4);
-  const glas2 = extraMat(sal, 0xbcd3d6, 0.42, { roughness: 0.15 });
-  const Y1 = 3.05, KNEE = 0.85, RIDGE = 6.1;
-  box(sal, W - 2 * T, KNEE, T, 0, Y1 + KNEE / 2, D / 2 - T / 2);
-  box(sal, W - 2 * T, KNEE, T, 0, Y1 + KNEE / 2, -D / 2 + T / 2);
-  const gableShape = new THREE.Shape();
-  gableShape.moveTo(-D / 2, Y1); gableShape.lineTo(D / 2, Y1); gableShape.lineTo(D / 2, Y1 + KNEE);
-  gableShape.lineTo(0, RIDGE); gableShape.lineTo(-D / 2, Y1 + KNEE); gableShape.closePath();
-  const hole = new THREE.Path();
-  hole.moveTo(-0.65, 3.95); hole.lineTo(-0.65, 4.95); hole.lineTo(0.65, 4.95); hole.lineTo(0.65, 3.95); hole.closePath();
-  gableShape.holes.push(hole);
-  const gableGeo = new THREE.ExtrudeGeometry(gableShape, { depth: T, bevelEnabled: false });
-  [-W / 2, W / 2 - T].forEach((x) => {
-    const g = addMesh(sal, gableGeo, x, 0, 0);
-    g.rotation.y = Math.PI / 2;
-    box(sal, 0.05, 1.0, 1.3, x + T / 2, 4.45, 0, glas2, false);
+  /* ================= 3 · Tag: rem, gitterspær, lægter og gavle ================= */
+  const spaer = makePart('tag', 6.6, 3);
+  const trae = material(spaer, 0x6c9858);              /* spærtræ og lægter, lysere end tagfladen */
+  const gavl = material(spaer, 0x5b8747);
+  const zink = material(spaer, 0x3f6830, 1, 0.6);
+
+  const PITCH = THREE.MathUtils.degToRad(30);
+  const tanP = Math.tan(PITCH), cosP = Math.cos(PITCH), sinP = Math.sin(PITCH);
+  const REM_Z = B / 2 - 0.35;                          /* remmen ligger midt på bagmuren */
+  const FOD_Y = WALL_TOP + 0.1, FOD_H = 0.15, FOD_TOP = FOD_Y + FOD_H;
+  const CHV = 0.2 / cosP;                              /* spærhoved 45×195, målt lodret */
+  const TAIL = B / 2 + 0.6;                            /* 600 mm udhæng ved facaden */
+  const GABLE = 0.3;                                   /* 300 mm udhæng ved gavlen */
+  const LX = L + 2 * GABLE;
+  /* Over- og underside af spærhovedet. Spærene har hæl, så der er plads til loftisoleringen ved facaden */
+  const yTop = (z) => FOD_Y + FOD_H / 2 + 0.3 + CHV / 2 + (REM_Z - Math.abs(z)) * tanP;
+  const yBot = (z) => yTop(z) - CHV;
+
+  /* Rem 100×100 på bagmuren i begge facader */
+  [1, -1].forEach((s) => box(spaer, L - 0.6, 0.1, 0.1, 0, WALL_TOP + 0.05, s * REM_Z, trae));
+
+  /* Gitterspær (W-spær): spærfod, to spærhoveder, hæle og fire gitterstænger */
+  const web = (x, p, q, w = 0.09) => {
+    const dz = q[0] - p[0], dy = q[1] - p[1], len = Math.hypot(dz, dy);
+    const nz = (-dy / len) * (w / 2), ny = (dz / len) * (w / 2);
+    prismX(spaer, [[p[0] + nz, p[1] + ny], [q[0] + nz, q[1] + ny], [q[0] - nz, q[1] - ny], [p[0] - nz, p[1] - ny]], 0.05, x, trae);
+  };
+  const SPAN = 2 * REM_Z;
+  const truss = (x) => {
+    box(spaer, 0.05, FOD_H, SPAN + 0.14, x, FOD_Y + FOD_H / 2, 0, trae);
+    [1, -1].forEach((s) => {
+      prismX(spaer, [[0, yTop(0)], [s * TAIL, yTop(TAIL)], [s * TAIL, yBot(TAIL)], [0, yBot(0)]], 0.05, x, trae);
+      const h0 = REM_Z - 0.12, h1 = REM_Z + 0.07;
+      prismX(spaer, [[s * h0, FOD_TOP], [s * h1, FOD_TOP], [s * h1, yBot(h1) + 0.02], [s * h0, yBot(h0) + 0.02]], 0.05, x, trae);
+      web(x, [s * SPAN / 6, FOD_TOP - 0.04], [s * SPAN / 4, yBot(SPAN / 4) + 0.04]);
+      web(x, [s * SPAN / 6, FOD_TOP - 0.04], [s * 0.04, yBot(0) + 0.02]);
+    });
+  };
+  const TRUSS_X0 = -(L / 2 - 0.35);                    /* gavlspær på gavlens bagmur */
+  const BAYS = Math.round((-2 * TRUSS_X0) / 1.0);      /* spær pr. ca. 1,0 m */
+  for (let i = 0; i <= BAYS; i++) truss(TRUSS_X0 + (i * -2 * TRUSS_X0) / BAYS);
+
+  /* Lægter på tværs af spærene, fra toplægte til fodlægte */
+  const SLOPE = TAIL / cosP;
+  const LAEGTER = 16;
+  for (let i = 0; i < LAEGTER; i++) {
+    const s = 0.07 + (i * (SLOPE - 0.14)) / (LAEGTER - 1);
+    const zc = s * cosP + 0.025 * sinP, yc = yTop(0) - s * sinP + 0.025 * cosP;
+    [1, -1].forEach((side) => slopeBox(spaer, LX, 0.05, 0.075, side * PITCH, 0, yc, side * zc, trae));
+  }
+
+  /* Sternbræt og tagrende ved tagfoden */
+  [1, -1].forEach((s) => {
+    box(spaer, LX, CHV + 0.03, 0.025, 0, (yTop(TAIL) + yBot(TAIL)) / 2 + 0.015, s * (TAIL + 0.0125), gavl);
+    put(spaer, new THREE.CylinderGeometry(0.065, 0.065, LX, 12).rotateZ(Math.PI / 2)
+      .translate(0, yTop(TAIL) - 0.05, s * (TAIL + 0.09)), zink);
   });
 
-  /* 6 · Saddeltag (Tag) */
-  const tag = makePart('tag', 6.4, 6);
-  const rise = RIDGE - (Y1 + KNEE), run = D / 2;
-  const angle = Math.atan2(rise, run);
-  const slope = Math.hypot(rise, run) + 0.55;        /* med udhæng */
-  const TH = 0.2;
-  [1, -1].forEach((side) => {
-    const m = box(tag, W + 0.9, TH, slope, 0, 0, 0);
-    m.rotation.x = side * angle;
-    const along = slope / 2 - 0.02;
-    m.position.set(0,
-      RIDGE - Math.sin(angle) * along + Math.cos(angle) * (TH / 2),
-      side * (Math.cos(angle) * along + Math.sin(angle) * (TH / 2)));
+  /* Gavltrekanter med lodret bræddebeklædning (1 på 2) og vindskeder */
+  [1, -1].forEach((s) => {
+    const x = s * (L / 2 - 0.035);
+    prismX(spaer, [[-B / 2, WALL_TOP], [B / 2, WALL_TOP], [B / 2, yTop(B / 2)], [0, yTop(0)], [-B / 2, yTop(B / 2)]], 0.03, x, gavl);
+    for (let k = -14; k <= 14; k++) {
+      const z0 = k * 0.25 - 0.05, z1 = k * 0.25 + 0.05;
+      const pts = [[z0, WALL_TOP], [z1, WALL_TOP], [z1, yTop(z1)]];
+      if (k === 0) pts.push([0, yTop(0)]);
+      pts.push([z0, yTop(z0)]);
+      prismX(spaer, pts, 0.022, s * (L / 2 - 0.009), gavl);
+    }
+    const zv = TAIL + 0.025;
+    const up = (z) => yTop(z) + 0.05 / cosP, dn = (z) => yTop(z) - 0.15;
+    prismX(spaer, [[-zv, dn(zv)], [0, dn(0)], [zv, dn(zv)], [zv, up(zv)], [0, up(0)], [-zv, up(zv)]], 0.025, s * (LX / 2 + 0.0125), gavl);
   });
-  box(tag, W + 0.9, 0.14, 0.36, 0, RIDGE + 0.2, 0);
+
+  /* ================= 4 · Tag: tagdækning og rygning ================= */
+  const tagflade = makePart('tag', 7.9, 5);
+  const under = (z) => yTop(z) + 0.05 / cosP;          /* oven på lægterne */
+  const over = (z) => under(z) + 0.06 / cosP;
+  const EAVE = TAIL + 0.08;
+  prismX(tagflade, [[-EAVE, under(EAVE)], [0, under(0)], [EAVE, under(EAVE)], [EAVE, over(EAVE) - 0.03], [0, over(0) - 0.03], [-EAVE, over(EAVE) - 0.03]], LX + 0.08, 0);
+  /* Tagsten i skifter: ét skifte pr. lægte, hvert skifte ligger en anelse fladere end tagfladen */
+  const COURSE = (EAVE / cosP) / (LAEGTER - 1);
+  const TILT = Math.atan(0.03 / COURSE);
+  for (let i = 0; i < LAEGTER - 1; i++) {
+    const s = (i + 0.5) * COURSE, n = 0.05 + 0.03 + 0.03;   /* afstand vinkelret fra spærets overside */
+    const zc = s * cosP + n * sinP, yc = yTop(0) - s * sinP + n * cosP;
+    [1, -1].forEach((side) => slopeBox(tagflade, LX + 0.08, 0.03, COURSE / Math.cos(TILT), side * (PITCH - TILT), 0, yc, side * zc));
+  }
+  put(tagflade, new THREE.CylinderGeometry(0.12, 0.12, LX + 0.12, 14).rotateZ(Math.PI / 2).translate(0, over(0) - 0.02, 0));
+
+  /* ================= 5 · MEP: ventilation i tagrummet ================= */
+  const mep = makePart('mep', 3.9, 4);
+  const aggregat = material(mep, 0xc9781f);
+  const UP = new THREE.Vector3(0, 1, 0);
+  const duct = (a, b, r) => {
+    const A = new THREE.Vector3(...a), Bv = new THREE.Vector3(...b);
+    const geo = new THREE.CylinderGeometry(r, r, A.distanceTo(Bv), 16);
+    geo.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(UP, Bv.clone().sub(A).normalize()));
+    geo.translate((A.x + Bv.x) / 2, (A.y + Bv.y) / 2, (A.z + Bv.z) / 2);
+    put(mep, geo);
+  };
+  const knee = (p, r) => put(mep, new THREE.SphereGeometry(r, 16, 10).translate(...p));
+  const MAIN = 0.09, BRANCH = 0.07;                    /* ø160 hovedkanal og ø125 stik, tegnet lidt kraftigt */
+  const YM = FOD_TOP + MAIN;                           /* kanalerne ligger oven på spærfødderne */
+  const AX = 1.0;                                      /* aggregatet står mellem to spær over entré og bad */
+  box(mep, 0.9, 0.55, 0.6, AX, FOD_TOP + 0.275, 0, aggregat);
+
+  /* Stik fra hovedkanal til ventil i loftet. Stikkene ligger midt mellem to spær */
+  const branch = (x, zMain, zEnd) => {
+    duct([x, YM, zMain], [x, YM, zEnd], BRANCH);
+    knee([x, YM, zEnd], BRANCH);
+    duct([x, YM, zEnd], [x, WALL_TOP + 0.08, zEnd], BRANCH);
+    put(mep, new THREE.CylinderGeometry(0.14, 0.14, 0.04, 20).translate(x, WALL_TOP + 0.07, zEnd));
+  };
+  /* Indblæsning (z = +0,18) til stue og værelser. Hovedkanalerne går gennem spærenes midterfelt */
+  duct([AX - 0.45, YM, 0.18], [-4, YM, 0.18], MAIN); knee([-4, YM, 0.18], MAIN);
+  branch(-4, 0.18, 2.0);
+  branch(-2, 0.18, 2.0);
+  duct([AX + 0.45, YM, 0.18], [3, YM, 0.18], MAIN); knee([3, YM, 0.18], MAIN);
+  branch(3, 0.18, 1.9);
+  branch(3, 0.18, -1.6);
+  /* Udsugning (z = -0,18) fra køkken og bad */
+  duct([AX - 0.45, YM, -0.18], [-3, YM, -0.18], MAIN); knee([-3, YM, -0.18], MAIN);
+  branch(-3, -0.18, -2.2);
+  branch(0, -0.18, -2.0);
+  /* Friskluft og afkast over tag, én taghætte på hver tagflade */
+  [1, -1].forEach((s) => {
+    const z = s * 1.3, y = FOD_TOP + 0.33, top = over(1.3) + 0.38;
+    duct([AX, y, s * 0.3], [AX, y, z], MAIN); knee([AX, y, z], MAIN);
+    duct([AX, y, z], [AX, top, z], MAIN);
+    put(mep, new THREE.CylinderGeometry(0.17, 0.17, 0.14, 20).translate(AX, top + 0.05, z));
+    put(mep, new THREE.CylinderGeometry(0.2, 0.2, 0.025, 20).translate(AX, top + 0.13, z));
+  });
+
+  /* ---------- Flet geometrien til ét net pr. materiale ---------- */
+  parts.forEach((p) => {
+    p.buckets.forEach((list, mat) => {
+      const mesh = new THREE.Mesh(mergeGeometries(list, false), mat);
+      const solid = mat.opacity === 1;
+      mesh.userData.layer = p.layer;
+      mesh.userData.cast = solid;
+      mesh.castShadow = solid;
+      mesh.receiveShadow = p.layer !== 'mep';      /* kanalerne beholder deres farve under taget */
+      p.group.add(mesh);
+      p.meshes.push(mesh);
+      if (solid) pickables.push(mesh);
+      list.forEach((g) => g.dispose());
+    });
+    p.buckets = null;
+  });
 
   /* ---------- Tilstand ---------- */
   const state = { manual: reduced ? 1 : 0, scroll: 0 };
-  const CENTER_CLOSED = 2.7, CENTER_OPEN = 5.9, SCALE_OPEN = 0.68;
+  const TOP = over(0) + 0.1;
+  const CENTER_CLOSED = TOP / 2;
+  const CENTER_OPEN = (TOP + tagflade.explodeY) / 2;
+  const SCALE_OPEN = 0.87;
 
   /* Intro: huset bygger sig selv op nedefra, lag for lag */
   if (!reduced) parts.forEach((p) => tween(p, { b: 1 }, 0.6, 'power3.out', 0.1 + p.order * 0.13));
@@ -208,21 +399,22 @@ export function init(stage, opts = {}) {
     const s = lerp(1, SCALE_OPEN, e);
     world.scale.setScalar(s);
     world.position.y = TARGET.y - s * lerp(CENTER_CLOSED, CENTER_OPEN, e);
+    terrain.constant = -world.position.y;
 
     parts.forEach((p) => {
-      const L = layerState[p.layer];
-      const alpha = p.b * L.v;
+      const Ls = layerState[p.layer];
+      const alpha = p.b * Ls.v;
       p.group.visible = alpha > 0.01;
-      p.group.position.y = p.explodeY * e + (1 - p.b) * 1.6 + (1 - L.v) * 0.7;
+      p.group.position.y = p.explodeY * e + (1 - p.b) * 1.6 + (1 - Ls.v) * 0.7;
       p.mats.forEach(({ m, base }) => {
         const o = base * alpha;
         const transparent = o < 0.999;
         if (m.transparent !== transparent) { m.transparent = transparent; m.needsUpdate = true; }
         m.opacity = o;
         m.depthWrite = base === 1 ? alpha > 0.5 : false;
-        if (m.emissive) m.emissiveIntensity = (m === p.mat ? 0.38 : 0.2) * L.hl;
+        m.emissiveIntensity = (base === 1 ? 0.34 : 0.1) * Ls.hl;
       });
-      p.group.traverse((o) => { if (o.isMesh && o.material === p.mat) o.castShadow = alpha > 0.5; });
+      p.meshes.forEach((mesh) => { mesh.castShadow = mesh.userData.cast && alpha > 0.5; });
     });
   };
 
@@ -282,7 +474,7 @@ export function init(stage, opts = {}) {
     pointer.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
     raycaster.setFromCamera(pointer, camera);
     const hit = raycaster.intersectObjects(pickables, false)
-      .find((h) => h.object.parent.visible && layerState[h.object.userData.layer].v > 0.5);
+      .find((h) => h.object.parent.visible && layerState[h.object.userData.layer].v > 0.5 && h.point.y > world.position.y);
     if (labelEl && hit) {
       const x = Math.min(r.width - 110, Math.max(4, ev.clientX - r.left + 14));
       const y = Math.max(4, ev.clientY - r.top - 34);
