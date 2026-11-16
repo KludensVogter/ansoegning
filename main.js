@@ -19,7 +19,11 @@
     ['fdd7c42', 'Fokuspunkter: hvert afsnit fylder én skærm, zoomer i fokus ved scroll, detaljer bag knapper og hover'],
     ['d67b60f', 'Skærmbilleder af de rigtige apps, nye tekster, infovinduer og fokuspunkt om arbejdsmetoden'],
     ['11bf387', '3D-hus: parcelhus i ét plan med fundament, hulmur, gitterspær og ventilation'],
-    ['4e0cd53', 'Kopier af appernes brugerflade, neutral tekst om arbejdsmetoden og startfil']
+    ['4e0cd53', 'Kopier af appernes brugerflade, neutral tekst om arbejdsmetoden og startfil'],
+    ['513af00', 'Hero: knappen fører nu til næste fokuspunkt i stedet for værktøjerne'],
+    ['72c3d92', 'Siden er ens til alle modtagere: felter til virksomhed og stilling fjernet'],
+    ['bdd96cd', 'Portrætfoto sat ind i første fokuspunkt'],
+    ['4dbbd58', 'Udgivelse: link til repoet og nyt delingsbillede']
   ];
 
   const $ = (s, r = document) => r.querySelector(s);
