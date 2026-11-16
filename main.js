@@ -640,7 +640,8 @@
      --------------------------------------------------------------- */
   safe('terminal', () => {
     const body = $('#term-body');
-    const cmdText = 'git log --oneline --reverse';
+    const SHOWN = 8;                                   /* de seneste runder, så listen kan være der */
+    const cmdText = 'git log --oneline --reverse -' + SHOWN;
     const line = (cls) => { const d = document.createElement('div'); d.className = 'term-line ' + cls; return d; };
     const span = (cls, text) => { const s = document.createElement('span'); s.className = cls; s.textContent = text; return s; };
     const play = animate;
@@ -649,7 +650,7 @@
     const cmdMsg = span('msg', play ? '' : cmdText);
     cmd.append(span('prompt', '$'), cmdMsg);
     body.append(cmd);
-    const rows = COMMITS.map(([hash, msg]) => {
+    const rows = COMMITS.slice(-SHOWN).map(([hash, msg]) => {
       const d = line(play ? 'is-wait' : '');
       d.append(span('hash', hash), span('msg', msg));
       body.append(d);
