@@ -23,7 +23,10 @@
     ['513af00', 'Hero: knappen fører nu til næste fokuspunkt i stedet for værktøjerne'],
     ['72c3d92', 'Siden er ens til alle modtagere: felter til virksomhed og stilling fjernet'],
     ['bdd96cd', 'Portrætfoto sat ind i første fokuspunkt'],
-    ['4dbbd58', 'Udgivelse: link til repoet og nyt delingsbillede']
+    ['4dbbd58', 'Udgivelse: link til repoet og nyt delingsbillede'],
+    ['470742c', 'Beslutningslog: siden er udgivet'],
+    ['37ebbc2', 'Animationer er standard for alle, rolig udgave kun efter eget valg'],
+    ['b2334f3', '3D-hus: rem og spær i Konstruktion, taget i Arkitekt, fagmodellen Tag fjernet']
   ];
 
   const $ = (s, r = document) => r.querySelector(s);
