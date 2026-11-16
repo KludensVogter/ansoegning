@@ -314,7 +314,8 @@ p + p { margin-top: 16px; }
 .svg-part.is-off { opacity: 0; }
 .stage.is-exploded .p-wall { transform: translateY(-12px); }
 .stage.is-exploded .p-mep { transform: translateY(-34px); }
-.stage.is-exploded .p-roof { transform: translateY(-52px); }
+.stage.is-exploded .p-truss { transform: translateY(-30px); }
+.stage.is-exploded .p-roof { transform: translateY(-62px); }
 .house-label {
   position: absolute; left: 0; top: 0; z-index: 2; pointer-events: none;
   padding: 6px 10px; border-radius: 8px; background: var(--ink); color: var(--bg);

@@ -138,7 +138,7 @@
   let current = null;
   let menuOpen = false;
   let houseApi = null;
-  const houseState = { layers: { konstruktion: true, arkitekt: true, mep: true, tag: true }, manual: reduced, scroll: 0, active: true };
+  const houseState = { layers: { konstruktion: true, arkitekt: true, mep: true }, manual: reduced, scroll: 0, active: true };
 
   /* Tidslinjen: fem stop inde i ét fokuspunkt */
   const tl = {

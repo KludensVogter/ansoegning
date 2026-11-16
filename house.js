@@ -1,11 +1,12 @@
 /* =====================================================================
    house.js – 3D-huset i hero (Three.js r160, ingen build)
    Et parcelhus i ét plan, 11,7 × 7,4 m, bygget af geometri i koden og
-   delt i fire fagmodeller:
-     Konstruktion (grå)      stribefundament, sokkel og terrændæk
-     Arkitekt (hvid/beige)   hulmur med vinduer og døre, skillevægge
+   delt i tre fagmodeller:
+     Konstruktion (grå)      stribefundament, sokkel, terrændæk, rem og gitterspær
+     Arkitekt (hvid/beige)   hulmur med vinduer og døre, skillevægge og taget:
+                             lægter, tagsten, rygning, stern, tagrender og gavle
      MEP (orange)            ventilation: aggregat, kanaler, ventiler, taghætter
-     Tag (grøn)              rem, gitterspær, lægter, gavle og tagdækning
+   Et kald til setLayer('tag', …) fra en ældre lagknap gør ingenting.
    Mål i meter. y = 0 er terræn, og gitteret ligger i terrænhøjde. Fundamentet
    er skjult under terræn, indtil lagene adskilles og det løftes fri.
    ===================================================================== */
@@ -16,8 +17,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 const LAYERS = {
   konstruktion: { label: 'Konstruktion', color: 0x9aa19a },
   arkitekt: { label: 'Arkitekt', color: 0xf0ebe1 },
-  mep: { label: 'MEP', color: 0xe08a2e },
-  tag: { label: 'Tag', color: 0x4e7d3a }
+  mep: { label: 'MEP', color: 0xe08a2e }
 };
 
 /* Lille hjælper: brug GSAP (samme easings som resten af siden), hvis det findes */
@@ -233,11 +233,16 @@ export function init(stage, opts = {}) {
   wallRun(vaegge, 'x', -0.9, -0.45, 1.75, 0.1, [dør(0.65, 0.8)], skille);       /* entré | bad */
   wallRun(vaegge, 'x', 0.35, 1.85, IX, 0.1, [], skille);                        /* værelse | værelse */
 
-  /* ================= 3 · Tag: rem, gitterspær, lægter og gavle ================= */
-  const spaer = makePart('tag', 6.6, 3);
-  const trae = material(spaer, 0x6c9858);              /* spærtræ og lægter, lysere end tagfladen */
-  const gavl = material(spaer, 0x5b8747);
-  const zink = material(spaer, 0x3f6830, 1, 0.6);
+  /* ================= 3 · Konstruktion: rem og gitterspær ================= */
+  const spaer = makePart('konstruktion', 6.6, 3);
+  const trae = material(spaer, 0xb1b7af);              /* spærtræ, lysere end betonen */
+
+  /* ================= 4 · Arkitekt: taget oven på spærene ================= */
+  const tagflade = makePart('arkitekt', 7.9, 5);
+  const tegl = material(tagflade, 0xb5a483);           /* tagsten og rygning i mørkere sand */
+  const laegte = material(tagflade, 0xddd3bb);
+  const gavl = material(tagflade, 0xcabea4);
+  const zink = material(tagflade, 0xa6a194, 1, 0.6);
 
   const PITCH = THREE.MathUtils.degToRad(30);
   const tanP = Math.tan(PITCH), cosP = Math.cos(PITCH), sinP = Math.sin(PITCH);
@@ -281,47 +286,46 @@ export function init(stage, opts = {}) {
   for (let i = 0; i < LAEGTER; i++) {
     const s = 0.07 + (i * (SLOPE - 0.14)) / (LAEGTER - 1);
     const zc = s * cosP + 0.025 * sinP, yc = yTop(0) - s * sinP + 0.025 * cosP;
-    [1, -1].forEach((side) => slopeBox(spaer, LX, 0.05, 0.075, side * PITCH, 0, yc, side * zc, trae));
+    [1, -1].forEach((side) => slopeBox(tagflade, LX, 0.05, 0.075, side * PITCH, 0, yc, side * zc, laegte));
   }
 
   /* Sternbræt og tagrende ved tagfoden */
   [1, -1].forEach((s) => {
-    box(spaer, LX, CHV + 0.03, 0.025, 0, (yTop(TAIL) + yBot(TAIL)) / 2 + 0.015, s * (TAIL + 0.0125), gavl);
-    put(spaer, new THREE.CylinderGeometry(0.065, 0.065, LX, 12).rotateZ(Math.PI / 2)
+    box(tagflade, LX, CHV + 0.03, 0.025, 0, (yTop(TAIL) + yBot(TAIL)) / 2 + 0.015, s * (TAIL + 0.0125), gavl);
+    put(tagflade, new THREE.CylinderGeometry(0.065, 0.065, LX, 12).rotateZ(Math.PI / 2)
       .translate(0, yTop(TAIL) - 0.05, s * (TAIL + 0.09)), zink);
   });
 
   /* Gavltrekanter med lodret bræddebeklædning (1 på 2) og vindskeder */
   [1, -1].forEach((s) => {
     const x = s * (L / 2 - 0.035);
-    prismX(spaer, [[-B / 2, WALL_TOP], [B / 2, WALL_TOP], [B / 2, yTop(B / 2)], [0, yTop(0)], [-B / 2, yTop(B / 2)]], 0.03, x, gavl);
+    prismX(tagflade, [[-B / 2, WALL_TOP], [B / 2, WALL_TOP], [B / 2, yTop(B / 2)], [0, yTop(0)], [-B / 2, yTop(B / 2)]], 0.03, x, gavl);
     for (let k = -14; k <= 14; k++) {
       const z0 = k * 0.25 - 0.05, z1 = k * 0.25 + 0.05;
       const pts = [[z0, WALL_TOP], [z1, WALL_TOP], [z1, yTop(z1)]];
       if (k === 0) pts.push([0, yTop(0)]);
       pts.push([z0, yTop(z0)]);
-      prismX(spaer, pts, 0.022, s * (L / 2 - 0.009), gavl);
+      prismX(tagflade, pts, 0.022, s * (L / 2 - 0.009), gavl);
     }
     const zv = TAIL + 0.025;
     const up = (z) => yTop(z) + 0.05 / cosP, dn = (z) => yTop(z) - 0.15;
-    prismX(spaer, [[-zv, dn(zv)], [0, dn(0)], [zv, dn(zv)], [zv, up(zv)], [0, up(0)], [-zv, up(zv)]], 0.025, s * (LX / 2 + 0.0125), gavl);
+    prismX(tagflade, [[-zv, dn(zv)], [0, dn(0)], [zv, dn(zv)], [zv, up(zv)], [0, up(0)], [-zv, up(zv)]], 0.025, s * (LX / 2 + 0.0125), gavl);
   });
 
-  /* ================= 4 · Tag: tagdækning og rygning ================= */
-  const tagflade = makePart('tag', 7.9, 5);
+  /* Tagdækning og rygning */
   const under = (z) => yTop(z) + 0.05 / cosP;          /* oven på lægterne */
   const over = (z) => under(z) + 0.06 / cosP;
   const EAVE = TAIL + 0.08;
-  prismX(tagflade, [[-EAVE, under(EAVE)], [0, under(0)], [EAVE, under(EAVE)], [EAVE, over(EAVE) - 0.03], [0, over(0) - 0.03], [-EAVE, over(EAVE) - 0.03]], LX + 0.08, 0);
+  prismX(tagflade, [[-EAVE, under(EAVE)], [0, under(0)], [EAVE, under(EAVE)], [EAVE, over(EAVE) - 0.03], [0, over(0) - 0.03], [-EAVE, over(EAVE) - 0.03]], LX + 0.08, 0, tegl);
   /* Tagsten i skifter: ét skifte pr. lægte, hvert skifte ligger en anelse fladere end tagfladen */
   const COURSE = (EAVE / cosP) / (LAEGTER - 1);
   const TILT = Math.atan(0.03 / COURSE);
   for (let i = 0; i < LAEGTER - 1; i++) {
     const s = (i + 0.5) * COURSE, n = 0.05 + 0.03 + 0.03;   /* afstand vinkelret fra spærets overside */
     const zc = s * cosP + n * sinP, yc = yTop(0) - s * sinP + n * cosP;
-    [1, -1].forEach((side) => slopeBox(tagflade, LX + 0.08, 0.03, COURSE / Math.cos(TILT), side * (PITCH - TILT), 0, yc, side * zc));
+    [1, -1].forEach((side) => slopeBox(tagflade, LX + 0.08, 0.03, COURSE / Math.cos(TILT), side * (PITCH - TILT), 0, yc, side * zc, tegl));
   }
-  put(tagflade, new THREE.CylinderGeometry(0.12, 0.12, LX + 0.12, 14).rotateZ(Math.PI / 2).translate(0, over(0) - 0.02, 0));
+  put(tagflade, new THREE.CylinderGeometry(0.12, 0.12, LX + 0.12, 14).rotateZ(Math.PI / 2).translate(0, over(0) - 0.02, 0), tegl);
 
   /* ================= 5 · MEP: ventilation i tagrummet ================= */
   const mep = makePart('mep', 3.9, 4);

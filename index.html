@@ -144,9 +144,12 @@ else document.documentElement.classList.add("reduced");
             <rect x="160" y="206" width="70" height="38" fill="#C7D8DA"/>
             <rect x="258" y="206" width="48" height="38" fill="#C7D8DA"/>
           </g>
-          <g data-layer="tag" class="svg-part p-roof">
-            <path d="M66 184 200 106 334 184Z" fill="#E3EBDD" stroke="#4E7D3A" stroke-width="2"/>
-            <path d="M44 190 200 98 356 190" fill="none" stroke="#4E7D3A" stroke-width="12" stroke-linejoin="miter"/>
+          <g data-layer="konstruktion" class="svg-part p-truss" fill="none" stroke="#9AA19A" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M70 184H330M70 184 200 110 330 184M200 110V184M135 184 167 147M265 184 233 147"/>
+          </g>
+          <g data-layer="arkitekt" class="svg-part p-roof">
+            <path d="M66 184 200 106 334 184Z" fill="#E9E2D0" stroke="#C9C2B2" stroke-width="2"/>
+            <path d="M44 190 200 98 356 190" fill="none" stroke="#B5A483" stroke-width="12" stroke-linejoin="miter"/>
           </g>
           <g data-layer="mep" class="svg-part p-mep" fill="none" stroke="#E08A2E" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
             <path d="M118 170H282M236 170V96"/>
@@ -158,9 +161,7 @@ else document.documentElement.classList.add("reduced");
       <div class="layers" role="group" aria-label="Lag i modellen">
         <button class="layer" type="button" data-layer="konstruktion" aria-pressed="true"><i style="--c:#9AA19A"></i>Konstruktion</button>
         <button class="layer" type="button" data-layer="arkitekt" aria-pressed="true"><i style="--c:#E4DCCB"></i>Arkitekt</button>
-        <button class="layer" type="button" data-layer="mep" aria-pressed="true"><i style="--c:#E08A2E"></i>MEP</button>
-        <button class="layer" type="button" data-layer="tag" aria-pressed="true"><i style="--c:#4E7D3A"></i>Tag</button>
-        <button class="layer layer-explode" type="button" id="explode" aria-pressed="false">Adskil</button>
+        <button class="layer" type="button" data-layer="mep" aria-pressed="true"><i style="--c:#E08A2E"></i>MEP</button>        <button class="layer layer-explode" type="button" id="explode" aria-pressed="false">Adskil</button>
       </div>
       <p class="stage-hint">Træk for at dreje. Slå fagmodellerne til og fra.</p>
     </div>

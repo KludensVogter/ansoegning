@@ -15,7 +15,7 @@ Valg, der afviger fra eller præciserer `BRIEF.md`. Én linje begrundelse pr. va
 - **Demoerne er kopier af appernes brugerflade med eksempeldata.** En illustration, der ikke ligner appen, er forkert at vise. Kopierne følger skærmbillederne og er mærket "Kopi · eksempeldata". Det erstatter briefens mærkat "Illustration".
 - **Skærmbilleder af de rigtige apps er med.** I KNtool-billedet er kundenavne, adresse og filsti sløret direkte i billedfilen. Teksten bruger de funktioner, billederne viser, men ingen tal eller versionsnumre.
 - **Fusion 360 bruges til funktionelle 3D-print i fritiden.** Oplyst af Joel, står ikke i briefen.
-- **3D-huset er et parcelhus i ét plan.** Det er bygget om i en separat session og godkendt af Joel: stribefundament og terrændæk, hulmur med vinduer og døre, gitterspær og tagsten, og ventilation som MEP. Briefens beskrivelse af huset (gulv, etageadskillelse, ét rør) gælder ikke længere.
+- **3D-huset er et parcelhus i ét plan med tre fagmodeller.** Det er bygget om i en separat session og godkendt af Joel. Konstruktion: stribefundament, sokkel, terrændæk, rem og gitterspær. Arkitekt: hulmur med vinduer og døre, skillevægge og hele taget (lægter, tagsten, rygning, tagrender og gavle) i sandfarve. MEP: ventilation. Fagmodellen "Tag" og dens knap er fjernet, fordi spær er konstruktion og tagdækning er arkitekt. Briefens beskrivelse af huset gælder ikke længere.
 - **`Start siden.bat` starter siden lokalt.** Den åbner siden med `?motion=1`, så animationerne kører.
 
 ## Egne valg undervejs
@@ -31,7 +31,7 @@ Valg, der afviger fra eller præciserer `BRIEF.md`. Én linje begrundelse pr. va
 - **På mobil ligger demoer og git-historik bag en knap.** De glider op over fokuspunktet og får hele skærmen. Skærmbilledet åbnes også fra en knap.
 - **Kopierne fanger ikke musehjulet unødigt.** RFAtool viser de families, der er plads til. Træet i KNtool kan kun rulle, når indholdet er højere end feltet.
 - **Kopierne viser kun det, skærmbillederne viser.** Klassifikationskoder og menupunkter er taget fra billederne. Knapper, hvis funktion ikke kan ses, er med som udseende, men gør ikke noget.
-- **Fallback-tegningen følger det nye hus.** Gavlen hører til Tag, og MEP vises som kanal og taghætte.
+- **Fallback-tegningen følger det nye hus.** Rem og spær hører til Konstruktion, tag og gavl til Arkitekt, og MEP vises som kanal og taghætte.
 - **Billedstier står i `CONFIG`.** Tom sti betyder, at billedet ikke vises. Så kommer der ingen 404-fejl i konsollen.
 - **PDF'en er udelukket fra git (`.gitignore`).** Den indeholder gadeadressen.
 - **Mappen hedder `Materiale` med stort M i stierne.** GitHub Pages skelner mellem store og små bogstaver.
