@@ -6,7 +6,7 @@ Valg, der afviger fra eller præciserer `BRIEF.md`. Én linje begrundelse pr. va
 
 - **Ingen PDF'er på siden.** Den eneste PDF i mappen viser gadeadresse og "XXX", og siden er offentlig. "Download CV" i hero er erstattet af "Læs ansøgningen", som fører til næste fokuspunkt. En knap til værktøjerne som det første forvirrede.
 - **Siden er den samme til alle modtagere.** Den nævner ikke en bestemt virksomhed eller stilling. Felterne i `CONFIG` og `?v=`/`?s=` i linket er fjernet igen, så der ikke er noget, der skal udfyldes pr. ansøgning.
-- **Byg lokalt, udgiv bagefter.** GitHub CLI (`gh`) er ikke installeret, og Joel vil se siden først. Udgivelse, `og:image` med fuld adresse og GitHub-linket venter til da.
+- **Siden er udgivet på GitHub Pages.** Den blev bygget og godkendt lokalt først. Linket er https://kludensvogter.github.io/ansoegning/, og koden ligger offentligt i https://github.com/KludensVogter/ansoegning. Joel valgte selv, at kode, brief, beslutningslog og historik må være offentlige.
 - **Siden er fokuspunkter, ikke en lang side.** Hvert fokuspunkt fylder én skærm, zoomer i fokus ved scroll, og de fleste detaljer ligger bag en knap eller hover. Det erstatter briefens opbygning med almindelig scroll, fastgjort vandret tidslinje og afsløringer ved scroll.
 - **Fokuspunkt 2 har Joels egen sætning som overskrift.** "Jeg vil arbejde med det, jeg interesserer mig for: de digitale processer bag projekteringen." Den tidligere overskrift står nu i teksten under.
 - **Der står ikke, at Joel ikke kan kode.** Teksten siger kun, at værktøjerne bygges med Claude Code.
@@ -63,4 +63,6 @@ Valg, der afviger fra eller præciserer `BRIEF.md`. Én linje begrundelse pr. va
 - Ingen fejl i konsollen.
 - Reduceret bevægelse: almindelig side, alt indhold synligt, 3D-modellen står stille og adskilt.
 - Ingen forbudte ord, og "XXX" vises ikke. Nye tekster er holdt op mod briefens afsnit 3, Joels svar og skærmbillederne.
-- **Ikke lavet endnu:** udgivelse, test på en rigtig telefon og ny Lighthouse-måling efter ombygningen.
+- Lighthouse (mobil) før udgivelse: Performance 97, Accessibility 97. De to fund (kontrast i KNtool-kopien og knapnavne) er rettet, men ikke målt igen.
+- Den udgivne side: alle filer og billeder svarer, ingen fejl i konsollen, og alle ni fokuspunkter passer ved 1440×900 og 360×640. PDF'en og guiden til ChatGPT ligger ikke på nettet.
+- **Ikke lavet endnu:** test på en rigtig telefon.
