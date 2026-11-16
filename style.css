@@ -511,7 +511,7 @@ p + p { margin-top: 16px; }
    ===================================================================== */
 .demo {
   --a-side: #1D1D1D; --a-side-hi: #3A3A3A; --a-side-text: #ECECEC; --a-side-muted: #9A9A9A;
-  --a-bg: #FAFAFA; --a-line: #E4E4E7; --a-text: #1F2328; --a-muted: #6B6B74; --a-green: #16A34A;
+  --a-bg: #FAFAFA; --a-line: #E4E4E7; --a-text: #1F2328; --a-muted: #6B6B74; --a-green: #15803D;
   container-type: inline-size;
   display: flex; flex-direction: column; height: min(60svh, 520px);
   background: var(--a-bg); color: var(--a-text); border-radius: 12px; overflow: hidden;
@@ -613,7 +613,7 @@ button.a-btn:hover { background: #F4F4F5; }
 button.a-btn:active { scale: 0.97; }
 .a-icon { width: 28px; padding: 0; }
 .a-primary { background: var(--a-green); color: #fff; box-shadow: none; font-weight: 600; min-width: 84px; }
-button.a-primary:hover { background: #15803D; }
+button.a-primary:hover { background: #166534; }
 .a-sep { width: 1px; height: 18px; background: var(--a-line); }
 .a-bar { flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 14px; background: #fff; border-bottom: 1px solid var(--a-line); }
 .a-search { position: relative; display: block; flex: 1 1 160px; min-width: 0; max-width: 340px; }

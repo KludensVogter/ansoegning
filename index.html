@@ -15,16 +15,11 @@
 
 <script>
 /* ------------------------------------------------------------------
-   INDSTILLINGER – det eneste, der skal rettes senere.
-
-   Virksomhed og stilling kan også sættes direkte i linket, så samme
-   side kan sendes til flere:
-     …/ansoegning/?v=AFRY&s=IKT-projektkoordinator
-   Uden parametre (og med "XXX" herunder) står teksten neutralt.
+   INDSTILLINGER – kontaktoplysninger og billeder.
+   Siden er den samme til alle modtagere og nævner ikke en bestemt
+   virksomhed eller stilling.
    ------------------------------------------------------------------ */
 const CONFIG = {
-  virksomhed: "XXX",          // fx "AFRY"  (eller ?v=AFRY i linket)
-  stilling: "XXX",            // fx "IKT-projektkoordinator"  (eller ?s=… i linket)
   navn: "Joel Jürgensen",
   email: "joeljurgensen@gmail.com",
   telefon: "+45 51 21 56 41",
@@ -172,7 +167,7 @@ else document.documentElement.classList.add("reduced");
   <div class="scene-inner container">
     <p class="label" data-in style="--i:0">Derfor søger jeg</p>
     <h2 class="statement" id="statement">Jeg vil arbejde med det, jeg interesserer mig for: de digitale processer bag projekteringen.</h2>
-    <p class="lede measure" data-in style="--i:2"><span id="motivation">Jeg søger en stilling inden for IKT og BIM-koordinering.</span> For mig er det lige så tilfredsstillende at løse et teknisk problem som at lave selve modellen.</p>
+    <p class="lede measure" data-in style="--i:2">Jeg søger en stilling inden for IKT og BIM-koordinering. For mig er det lige så tilfredsstillende at løse et teknisk problem som at lave selve modellen.</p>
 
     <div class="tabs tabs-wide" data-tabs data-in style="--i:3">
       <p class="tabs-hint">Det tager jeg med</p>
@@ -350,7 +345,7 @@ else document.documentElement.classList.add("reduced");
       </div>
       <div class="tool-actions" data-in style="--i:4">
         <button class="btn btn-primary sheet-open" type="button"><span>Prøv demoen</span></button>
-        <button class="shot" type="button" id="shot-rfatool" hidden aria-label="Forstør skærmbillede af den rigtige RFAtool"><img alt="Skærmbillede af RFAtool" loading="lazy"><span class="shot-cap">Se den rigtige app</span></button>
+        <button class="shot" type="button" id="shot-rfatool" hidden><img alt="Skærmbillede af RFAtool" loading="lazy"><span class="shot-cap">Se den rigtige app</span></button>
       </div>
     </div>
     <div class="demo sheet" id="demo-rfa" data-in style="--i:2">
@@ -384,7 +379,7 @@ else document.documentElement.classList.add("reduced");
       </div>
       <div class="tool-actions" data-in style="--i:3">
         <button class="btn btn-primary sheet-open" type="button"><span>Prøv demoen</span></button>
-        <button class="shot" type="button" id="shot-kntool" hidden aria-label="Forstør skærmbillede af den rigtige KNtool"><img alt="Skærmbillede af KNtool" loading="lazy"><span class="shot-cap">Se den rigtige app</span></button>
+        <button class="shot" type="button" id="shot-kntool" hidden><img alt="Skærmbillede af KNtool" loading="lazy"><span class="shot-cap">Se den rigtige app</span></button>
       </div>
     </div>
     <div class="demo sheet" id="demo-kn" data-in style="--i:2">

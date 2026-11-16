@@ -4,3 +4,6 @@ Materiale/*.pdf
 .claude/
 node_modules/
 test-results/
+
+# Guiden til ChatGPT er ikke en del af siden
+Guide*.md

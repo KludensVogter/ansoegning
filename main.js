@@ -39,35 +39,15 @@
   };
 
   /* ---------------------------------------------------------------
-     1. Indstillinger: CONFIG + ?v= og ?s= i linket
+     1. Indstillinger: kontaktoplysninger fra CONFIG
      --------------------------------------------------------------- */
   safe('config', () => {
-    const params = new URLSearchParams(location.search);
-    const clean = (v) => (v || '').replace(/[\u0000-\u001f<>]/g, '').trim().slice(0, 60);
-    const pick = (key, cfg) => {
-      const fromUrl = clean(params.get(key));
-      if (fromUrl) return fromUrl;
-      const c = clean(cfg);
-      return c && c.toUpperCase() !== 'XXX' ? c : '';
-    };
-    const virksomhed = pick('v', CONFIG.virksomhed);
-    const stilling = pick('s', CONFIG.stilling);
-
     $$('[data-cfg]').forEach((el) => {
       const v = CONFIG[el.dataset.cfg];
       if (v) el.textContent = v;
     });
     $('#mail-btn').href = 'mailto:' + CONFIG.email;
     $('#tel-btn').href = 'tel:' + CONFIG.telefon.replace(/[^\d+]/g, '');
-
-    let lead = 'Jeg søger en stilling inden for IKT og BIM-koordinering';
-    if (stilling && virksomhed) lead = 'Jeg søger stillingen som ' + stilling + ' hos ' + virksomhed;
-    else if (stilling) lead = 'Jeg søger stillingen som ' + stilling;
-    else if (virksomhed) lead = 'Jeg søger en stilling inden for IKT og BIM-koordinering hos ' + virksomhed;
-    $('#motivation').textContent = lead + '.';
-
-    $('#hero-label').textContent = stilling ? 'Ansøgning · ' + stilling : 'Ansøgning';
-    if (virksomhed) document.title = CONFIG.navn + ' · Ansøgning til ' + virksomhed;
 
     if (CONFIG.github) {
       $('#github-link').href = CONFIG.github;

@@ -5,7 +5,7 @@ Valg, der afviger fra eller præciserer `BRIEF.md`. Én linje begrundelse pr. va
 ## Aftalt med Joel
 
 - **Ingen PDF'er på siden.** Den eneste PDF i mappen viser gadeadresse og "XXX", og siden er offentlig. "Download CV" i hero er erstattet af "Læs ansøgningen", som fører til næste fokuspunkt. En knap til værktøjerne som det første forvirrede.
-- **Virksomhed og stilling sættes via linket.** `?v=AFRY&s=IKT-projektkoordinator` udfylder teksten, så samme udgivne side kan sendes til flere. `CONFIG` gælder som standard, og uden nogen af delene står teksten neutralt.
+- **Siden er den samme til alle modtagere.** Den nævner ikke en bestemt virksomhed eller stilling. Felterne i `CONFIG` og `?v=`/`?s=` i linket er fjernet igen, så der ikke er noget, der skal udfyldes pr. ansøgning.
 - **Byg lokalt, udgiv bagefter.** GitHub CLI (`gh`) er ikke installeret, og Joel vil se siden først. Udgivelse, `og:image` med fuld adresse og GitHub-linket venter til da.
 - **Siden er fokuspunkter, ikke en lang side.** Hvert fokuspunkt fylder én skærm, zoomer i fokus ved scroll, og de fleste detaljer ligger bag en knap eller hover. Det erstatter briefens opbygning med almindelig scroll, fastgjort vandret tidslinje og afsløringer ved scroll.
 - **Fokuspunkt 2 har Joels egen sætning som overskrift.** "Jeg vil arbejde med det, jeg interesserer mig for: de digitale processer bag projekteringen." Den tidligere overskrift står nu i teksten under.
