@@ -253,6 +253,15 @@ p + p { margin-top: 16px; }
 .counter b { color: var(--ink); font-weight: 700; }
 .counter em { font-style: normal; color: var(--green-ink); margin-left: 6px; }
 .menu-open .counter { visibility: hidden; }
+.motion-toggle {
+  position: fixed; z-index: 45; bottom: 16px;
+  right: max(var(--pad), calc((100vw - var(--container)) / 2 + var(--pad)));
+  font: 500 0.75rem/1.2 var(--body); color: var(--muted);
+  text-decoration: underline; text-underline-offset: 3px;
+  transition: color var(--t-hover) var(--ease);
+}
+.motion-toggle:hover { color: var(--ink); }
+.menu-open .motion-toggle { visibility: hidden; }
 
 /* ---------- Faner: detaljer bag knap eller hover ---------- */
 .tabs { margin-top: 28px; }

@@ -59,6 +59,18 @@
     }
   });
 
+  /* Vej til den rolige udgave for dem, der har brug for den, og tilbage igen */
+  safe('bevægelse', () => {
+    const link = $('#motion-toggle');
+    if (reduced) {
+      link.textContent = 'Vis med animationer';
+      link.href = location.pathname;
+      link.hidden = false;
+    } else if (PREFERS_REDUCED) {
+      link.hidden = false;
+    }
+  });
+
   /* Billeder, der kun vises, hvis stien er udfyldt og filen findes */
   const probe = (src) => new Promise((res) => {
     if (!src) return res(false);

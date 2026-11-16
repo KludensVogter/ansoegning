@@ -36,7 +36,8 @@ Valg, der afviger fra eller præciserer `BRIEF.md`. Én linje begrundelse pr. va
 - **PDF'en er udelukket fra git (`.gitignore`).** Den indeholder gadeadressen.
 - **Mappen hedder `Materiale` med stort M i stierne.** GitHub Pages skelner mellem store og små bogstaver.
 - **Mørkere grøn (#3F6A2E) til små tekster.** Accentfarven #4E7D3A giver for lav kontrast på den grågrønne flade.
-- **`?motion=1` og `?motion=0` tvinger animationer til og fra.** Kun til test. Joels Windows har "reducér bevægelse" slået til, så uden `?motion=1` ser han den rolige udgave.
+- **Den animerede udgave er standard for alle.** Joel besluttede det, fordi modtagere kan have "reducér bevægelse" slået til uden at vide det, og de skal ikke risikere at se den simple udgave. Det afviger fra briefens krav om at følge `prefers-reduced-motion`.
+- **Den rolige udgave findes stadig, men kun når man selv vælger den.** `?motion=0` i linket viser den. Besøgende, hvis system beder om mindre bevægelse, får et lille link nederst til højre: "Vis uden animationer". Det er til dem, der bliver dårlige af bevægelse på skærmen.
 - **Git-forfatter er sat lokalt til Joels navn og e-mail.** Der var ingen git-identitet på maskinen.
 - **Terminalen viser historikken til og med næstsidste commit.** En commit kan ikke indeholde sin egen besked på forhånd. Commits, der kun opdaterer selve listen ("Terminal: …"), vises ikke.
 
@@ -61,7 +62,7 @@ Valg, der afviger fra eller præciserer `BRIEF.md`. Én linje begrundelse pr. va
 
 - Alle ni fokuspunkter passer på én skærm ved 1440×900, 390×760 og 360×640. Ingen vandret scroll.
 - Ingen fejl i konsollen.
-- Reduceret bevægelse: almindelig side, alt indhold synligt, 3D-modellen står stille og adskilt.
+- Den rolige udgave (`?motion=0`): almindelig side, alt indhold synligt, 3D-modellen står stille og adskilt. Linket frem og tilbage mellem de to udgaver virker.
 - Ingen forbudte ord, og "XXX" vises ikke. Nye tekster er holdt op mod briefens afsnit 3, Joels svar og skærmbillederne.
 - Lighthouse (mobil) før udgivelse: Performance 97, Accessibility 97. De to fund (kontrast i KNtool-kopien og knapnavne) er rettet, men ikke målt igen.
 - Den udgivne side: alle filer og billeder svarer, ingen fejl i konsollen, og alle ni fokuspunkter passer ved 1440×900 og 360×640. PDF'en og guiden til ChatGPT ligger ikke på nettet.

@@ -18,4 +18,4 @@ if %errorlevel%==0 (
 
 start "Ansoegning - lokal server (luk vinduet for at stoppe)" /min %PY% -m http.server 5173
 timeout /t 2 /nobreak >nul
-start "" "http://localhost:5173/?motion=1"
+start "" "http://localhost:5173/"

@@ -32,10 +32,12 @@ const CONFIG = {
   github: "https://github.com/KludensVogter/ansoegning"   // repoet med sidens kode
 };
 
-/* Respekterer "reducér bevægelse" i styresystemet.
-   Til test kan animationerne tvinges til med ?motion=1 og fra med ?motion=0 i linket. */
-const REDUCED_MOTION = /[?&]motion=0(&|$)/.test(location.search)
-  || (matchMedia("(prefers-reduced-motion: reduce)").matches && !/[?&]motion=1(&|$)/.test(location.search));
+/* Den animerede udgave er standard for alle, også når styresystemet har
+   "reducér bevægelse" slået til (mange har det slået til uden at vide det).
+   Den rolige udgave vises kun, når man selv vælger den: med ?motion=0 i linket
+   eller via linket "Vis uden animationer" nederst på siden. */
+const PREFERS_REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const REDUCED_MOTION = /[?&]motion=0(&|$)/.test(location.search);
 if (!REDUCED_MOTION) document.documentElement.classList.add("anim");
 else document.documentElement.classList.add("reduced");
 </script>
@@ -98,6 +100,9 @@ else document.documentElement.classList.add("reduced");
 
 <!-- Viser, hvilket fokuspunkt man står ved -->
 <div class="counter" id="counter" aria-hidden="true"><b>01</b><span>/ 09</span><em>Start</em></div>
+
+<!-- Vises kun for dem, der har bedt deres system om mindre bevægelse, og i den rolige udgave -->
+<a class="motion-toggle" id="motion-toggle" href="?motion=0" hidden>Vis uden animationer</a>
 
 <main id="indhold">
 
